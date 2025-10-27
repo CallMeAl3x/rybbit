@@ -84,7 +84,7 @@ export class BullMQAdapter implements IJobQueue {
           defaultJobOptions: {
             attempts: 1, // No retries, same as pg-boss
             removeOnComplete: true,
-            removeOnFail: false, // Keep failed jobs for debugging
+            removeOnFail: true,
           },
         });
 
