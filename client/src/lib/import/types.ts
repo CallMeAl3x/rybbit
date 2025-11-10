@@ -1,11 +1,6 @@
-// Types for client-side CSV import system
-// Client parses CSV, server transforms and validates
-
-// Allowed date range for imports based on subscription tier
 export interface AllowedDateRange {
-  earliestAllowedDate: string; // yyyy-MM-dd format
-  latestAllowedDate: string; // yyyy-MM-dd format
-  historicalWindowMonths: number; // 6, 24, or 60
+  earliestAllowedDate: string;
+  latestAllowedDate: string;
 }
 
 export interface UmamiEvent {
