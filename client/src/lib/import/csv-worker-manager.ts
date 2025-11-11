@@ -2,56 +2,12 @@ import Papa from "papaparse";
 import { DateTime } from "luxon";
 import type { UmamiEvent } from "./types";
 
-const BATCH_SIZE = 5000;
-
-const umamiHeaders = [
-  undefined,
-  "session_id",
-  undefined,
-  undefined,
-  "hostname",
-  "browser",
-  "os",
-  "device",
-  "screen",
-  "language",
-  "country",
-  "region",
-  "city",
-  "url_path",
-  "url_query",
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  "referrer_path",
-  "referrer_query",
-  "referrer_domain",
-  "page_title",
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  "event_type",
-  "event_name",
-  undefined,
-  "distinct_id",
-  "created_at",
-  undefined,
-];
-
 export class CSVWorkerManager {
   private aborted = false;
-  private uploadInProgress = false;
-  private parsingComplete = false;
   private quotaExceeded = false;
   private siteId: number = 0;
   private importId: string = "";
 
-  private currentBatch: UmamiEvent[] = [];
   private earliestAllowedDate: DateTime | null = null;
   private latestAllowedDate: DateTime | null = null;
 
@@ -78,20 +34,40 @@ export class CSVWorkerManager {
       return;
     }
 
-    Papa.parse<UmamiEvent>(file, {
-      worker: true,
+    Papa.parse(file, {
       header: true,
       skipEmptyLines: "greedy",
-      step: results => {
-        if (this.aborted || this.quotaExceeded) return;
+      chunkSize: 9 * 1024 * 1024,
+      chunk: async (results, parser) => {
+        if (this.aborted || this.quotaExceeded) {
+          parser.abort();
+          return;
+        }
 
-        if (results.data) {
-          this.handleParsedRow(results.data);
+        parser.pause();
+
+        const validEvents: UmamiEvent[] = [];
+        for (const row of results.data) {
+          const event = this.transformRow(row);
+          if (event && event.created_at && this.isDateInRange(event.created_at)) {
+            validEvents.push(event);
+          }
+        }
+
+        // Upload chunk and wait for completion
+        await this.uploadChunk(validEvents, false);
+
+        // Only resume if not aborted
+        if (!this.aborted && !this.quotaExceeded) {
+          parser.resume();
         }
       },
-      complete: () => {
+      complete: async () => {
         if (this.aborted) return;
-        this.handleParseComplete();
+
+        // Send finalization signal
+        await this.uploadChunk([], true);
+        console.log("Import completed successfully");
       },
       error: error => {
         if (this.aborted) return;
@@ -117,72 +93,38 @@ export class CSVWorkerManager {
     return true;
   }
 
-  private handleParsedRow(row: unknown): void {
-    const rawEvent = row as Record<string, unknown>;
+  private transformRow(row: unknown): UmamiEvent | null {
+    const rawEvent = row as Record<string, string>;
 
     const umamiEvent: UmamiEvent = {
-      session_id: String(rawEvent.session_id || ""),
-      hostname: String(rawEvent.hostname || ""),
-      browser: String(rawEvent.browser || ""),
-      os: String(rawEvent.os || ""),
-      device: String(rawEvent.device || ""),
-      screen: String(rawEvent.screen || ""),
-      language: String(rawEvent.language || ""),
-      country: String(rawEvent.country || ""),
-      region: String(rawEvent.region || ""),
-      city: String(rawEvent.city || ""),
-      url_path: String(rawEvent.url_path || ""),
-      url_query: String(rawEvent.url_query || ""),
-      referrer_path: String(rawEvent.referrer_path || ""),
-      referrer_query: String(rawEvent.referrer_query || ""),
-      referrer_domain: String(rawEvent.referrer_domain || ""),
-      page_title: String(rawEvent.page_title || ""),
-      event_type: String(rawEvent.event_type || ""),
-      event_name: String(rawEvent.event_name || ""),
-      distinct_id: String(rawEvent.distinct_id || ""),
-      created_at: String(rawEvent.created_at || ""),
+      session_id: rawEvent.session_id,
+      hostname: rawEvent.hostname,
+      browser: rawEvent.browser,
+      os: rawEvent.os,
+      device: rawEvent.device,
+      screen: rawEvent.screen,
+      language: rawEvent.language,
+      country: rawEvent.country,
+      region: rawEvent.region,
+      city: rawEvent.city,
+      url_path: rawEvent.url_path,
+      url_query: rawEvent.url_query,
+      referrer_path: rawEvent.referrer_path,
+      referrer_query: rawEvent.referrer_query,
+      referrer_domain: rawEvent.referrer_domain,
+      page_title: rawEvent.page_title,
+      event_type: rawEvent.event_type,
+      event_name: rawEvent.event_name,
+      distinct_id: rawEvent.distinct_id,
+      created_at: rawEvent.created_at,
     };
 
-    // Skip rows with missing created_at (required field)
+
     if (!umamiEvent.created_at) {
-      return;
+      return null;
     }
 
-    // Apply quota-based date range filter
-    if (!this.isDateInRange(umamiEvent.created_at)) {
-      return;
-    }
-
-    // Add to batch
-    this.currentBatch.push(umamiEvent);
-
-    // Send batch when it reaches chunk size
-    if (this.currentBatch.length >= BATCH_SIZE) {
-      this.sendBatch(false);
-    }
-  }
-
-  private sendBatch(isLastBatch: boolean): void {
-    if (this.currentBatch.length > 0) {
-      const batch = this.currentBatch;
-      this.currentBatch = [];
-      this.uploadBatch(batch, isLastBatch);
-    } else if (isLastBatch) {
-      // No events in final batch, send empty batch with finalization
-      this.uploadBatch([], isLastBatch);
-    }
-  }
-
-  private handleParseComplete(): void {
-    this.parsingComplete = true;
-
-    // Send final batch with finalization flag
-    this.sendBatch(true);
-
-    // If nothing to upload, check completion immediately
-    if (!this.uploadInProgress) {
-      this.checkCompletion();
-    }
+    return umamiEvent;
   }
 
   private handleError(message: string): void {
@@ -190,18 +132,15 @@ export class CSVWorkerManager {
     this.terminate();
   }
 
-  private async uploadBatch(events: UmamiEvent[], isLastBatch: boolean): Promise<void> {
-    // Don't upload if quota exceeded
+  private async uploadChunk(events: UmamiEvent[], isLastBatch: boolean): Promise<void> {
     if (this.quotaExceeded) {
       return;
     }
 
-    // Skip empty batches unless it's the last one (needed for finalization)
+    // Skip empty chunks unless it's the last one (needed for finalization)
     if (events.length === 0 && !isLastBatch) {
       return;
     }
-
-    this.uploadInProgress = true;
 
     try {
       const response = await fetch(`/api/batch-import-events/${this.siteId}/${this.importId}`, {
@@ -223,10 +162,9 @@ export class CSVWorkerManager {
 
       const data = await response.json();
 
-      // Check if quota was exceeded
       if (data.quotaExceeded) {
         this.quotaExceeded = true;
-        this.aborted = true; // Stop parsing
+        this.aborted = true;
         console.log("Import completed with quota limits:", data.message);
         return;
       }
@@ -235,17 +173,6 @@ export class CSVWorkerManager {
       console.error("Upload failed:", error instanceof Error ? error.message : "Unknown error");
       this.terminate();
       return;
-    } finally {
-      this.uploadInProgress = false;
-    }
-
-    // Check if we're done
-    this.checkCompletion();
-  }
-
-  private checkCompletion(): void {
-    if (this.parsingComplete && !this.uploadInProgress && !this.quotaExceeded) {
-      console.log("Import completed successfully");
     }
   }
 
