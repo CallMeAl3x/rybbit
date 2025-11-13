@@ -209,6 +209,24 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
               <div className="flex items-center justify-center">
+                <Image
+                  src="/logos/tencent.svg"
+                  alt="Tencent"
+                  width={130}
+                  height={40}
+                  className="opacity-100 hover:opacity-100 transition-opacity invert grayscale"
+                />
+              </div>
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/logos/convex.svg"
+                  alt="Convex"
+                  width={120}
+                  height={40}
+                  className="opacity-60 hover:opacity-100 transition-opacity grayscale"
+                />
+              </div>
+              <div className="flex items-center justify-center">
                 <Link href="https://onyx.app" target="_blank">
                   <Image
                     src="/logos/onyx.webp"
@@ -237,16 +255,7 @@ export default function HomePage() {
                   className="opacity-60 hover:opacity-100 transition-opacity invert"
                 />
               </div>
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/logos/tilaa.svg"
-                  alt="Tilaa"
-                  width={100}
-                  height={40}
-                  className="opacity-60 hover:opacity-100 transition-opacity invert"
-                />
-              </div>
-              <div className="flex items-center justify-center">
+              {/* <div className="flex items-center justify-center">
                 <Image
                   src="/logos/strawpoll.svg"
                   alt="StrawPoll"
@@ -254,7 +263,7 @@ export default function HomePage() {
                   height={40}
                   className="opacity-60 hover:opacity-100 transition-opacity invert"
                 />
-              </div>
+              </div> */}
               <div className="flex items-center justify-center">
                 <Image
                   src="/logos/mydramalist.png"
