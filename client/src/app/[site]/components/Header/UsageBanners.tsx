@@ -13,9 +13,6 @@ export function UsageBanners() {
     return num.toLocaleString();
   };
 
-  // Get current month name
-  const currentMonth = new Date().toLocaleString("en-US", { month: "long" });
-
   // Calculate usage percentage
   const getUsagePercentage = () => {
     if (!subscription?.eventLimit || !subscription.monthlyEventCount) return 0;
@@ -30,7 +27,7 @@ export function UsageBanners() {
     subscription.monthlyEventCount > subscription.eventLimit
   ) {
     return (
-      <div className="mt-4 px-4 py-3 rounded-lg border border-red-200 dark:border-red-400/30 bg-red-50/80 dark:bg-red-900/20 text-sm flex gap-4 items-center">
+      <div className="mt-4 px-4 py-3 rounded-lg border border-red-300 dark:border-red-400/30 bg-red-100/80 dark:bg-red-900/20 text-sm flex gap-4 items-center">
         <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0" />
         <div className="flex-1">
           <span className="text-red-700 dark:text-red-300 font-medium">
@@ -55,7 +52,7 @@ export function UsageBanners() {
   // Approaching limit (90-100%)
   if (usagePercentage >= 90) {
     return (
-      <div className="mt-4 px-4 py-3 rounded-lg border border-amber-200 dark:border-amber-400/30 bg-amber-50/80 dark:bg-amber-900/20 text-sm flex gap-4 items-center">
+      <div className="mt-4 px-4 py-3 rounded-lg border border-amber-300 dark:border-amber-400/30 bg-amber-100/80 dark:bg-amber-900/20 text-sm flex gap-4 items-center">
         <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
         <div className="flex-1">
           <span className="text-amber-700 dark:text-amber-300 font-medium">
