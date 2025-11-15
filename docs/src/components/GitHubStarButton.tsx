@@ -3,9 +3,22 @@
 import { Star } from "lucide-react";
 import { trackAdEvent } from "../lib/trackAdEvent";
 import { useGithubStarCount } from "../lib/useGithubStarCount";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
 
 export function GitHubStarButton() {
   const { starCount, isLoading } = useGithubStarCount();
+
+  const { systemTheme, resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    if (systemTheme && resolvedTheme) {
+      window.rybbit.event("theme", {
+        resolvedTheme,
+        systemTheme,
+      });
+    }
+  }, [resolvedTheme, resolvedTheme]);
 
   return (
     <div className="mb-6 md:mb-8" onClick={() => trackAdEvent("github")}>
