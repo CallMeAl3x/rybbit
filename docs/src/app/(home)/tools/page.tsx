@@ -28,6 +28,7 @@ import { pageNamePlatformList } from "./components/page-name-platform-configs";
 import { postGeneratorPlatformList } from "./components/post-generator-platform-configs";
 import { usernameGeneratorPlatformList } from "./components/username-generator-platform-configs";
 import { hashtagGeneratorPlatformList } from "./components/hashtag-generator-platform-configs";
+import { characterCounterPlatformList } from "./components/character-counter-platform-configs";
 import {
   SiDiscord,
   SiX,
@@ -284,6 +285,13 @@ const hashtagGeneratorTools = hashtagGeneratorPlatformList.map(platform => ({
   description: `Generate strategic hashtags for ${platform.name} to boost discoverability.`,
 }));
 
+const characterCounterTools = characterCounterPlatformList.map(platform => ({
+  href: `/tools/${platform.id}-character-counter`,
+  icon: platformIconMap[platform.id],
+  title: platform.displayName,
+  description: `Count characters for ${platform.name} posts and stay within limits.`,
+}));
+
 const socialMediaTools = [
   ...fontGeneratorTools,
   ...commentGeneratorTools,
@@ -291,6 +299,7 @@ const socialMediaTools = [
   ...postGeneratorTools,
   ...usernameGeneratorTools,
   ...hashtagGeneratorTools,
+  ...characterCounterTools,
 ];
 
 function ToolCard({ tool }: { tool: { href: string; icon: any; title: string; description: string } }) {

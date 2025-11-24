@@ -5,6 +5,7 @@ import PageNameGenerator from "../../components/PageNameGenerator";
 import PostGenerator from "../../components/PostGenerator";
 import UsernameGenerator from "../../components/UsernameGenerator";
 import { HashtagGenerator } from "../../components/HashtagGenerator";
+import { CharacterCounter } from "../../components/CharacterCounter";
 import { platformConfigs, platformList } from "../../components/platform-configs";
 import {
   commentPlatformConfigs,
@@ -26,6 +27,10 @@ import {
   hashtagGeneratorPlatformConfigs,
   hashtagGeneratorPlatformList,
 } from "../../components/hashtag-generator-platform-configs";
+import {
+  characterCounterPlatformConfigs,
+  characterCounterPlatformList,
+} from "../../components/character-counter-platform-configs";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -61,6 +66,10 @@ export async function generateStaticParams() {
     slug: `${platform.id}-hashtag-generator`,
   }));
 
+  const characterCounters = characterCounterPlatformList.map((platform) => ({
+    slug: `${platform.id}-character-counter`,
+  }));
+
   return [
     ...fontGenerators,
     ...commentGenerators,
@@ -68,6 +77,7 @@ export async function generateStaticParams() {
     ...postGenerators,
     ...usernameGenerators,
     ...hashtagGenerators,
+    ...characterCounters,
   ];
 }
 
@@ -76,6 +86,36 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+
+  // Check if it's a character counter
+  if (slug.endsWith("-character-counter")) {
+    const platformId = slug.replace("-character-counter", "");
+    const platform = characterCounterPlatformConfigs[platformId];
+
+    if (!platform) {
+      return { title: "Character Counter Not Found" };
+    }
+
+    return {
+      title: `${platform.displayName} | ${platform.name} Character Limit Tool`,
+      description: platform.description,
+      openGraph: {
+        title: platform.displayName,
+        description: platform.description,
+        type: "website",
+        url: `https://rybbit.com/tools/${platform.id}-character-counter`,
+        siteName: "Rybbit Documentation",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: platform.displayName,
+        description: platform.description,
+      },
+      alternates: {
+        canonical: `https://rybbit.com/tools/${platform.id}-character-counter`,
+      },
+    };
+  }
 
   // Check if it's a hashtag generator
   if (slug.endsWith("-hashtag-generator")) {
@@ -260,6 +300,173 @@ export async function generateMetadata({
 
 export default async function PlatformToolPage({ params }: PageProps) {
   const { slug } = await params;
+
+  // Check if it's a character counter
+  if (slug.endsWith("-character-counter")) {
+    const platformId = slug.replace("-character-counter", "");
+    const platform = characterCounterPlatformConfigs[platformId];
+
+    // Handle invalid platform
+    if (!platform) {
+      notFound();
+    }
+
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: platform.displayName,
+      description: platform.description,
+      url: `https://rybbit.com/tools/${platform.id}-character-counter`,
+      applicationCategory: "Utility",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      author: {
+        "@type": "Organization",
+        name: "Rybbit",
+        url: "https://rybbit.com",
+      },
+    };
+
+    const educationalContent = (
+      <>
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
+          About {platform.name} Character Limits
+        </h2>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">
+          {platform.educationalContent}
+        </p>
+
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
+          How to Use This Tool
+        </h3>
+        <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
+          <li>
+            <strong>Type or paste your text</strong> into the text area above
+          </li>
+          <li>
+            <strong>Watch the character count</strong> update in real-time
+          </li>
+          <li>
+            <strong>Monitor the progress bar</strong> to see how close you are
+            to the limit
+          </li>
+          <li>
+            <strong>Adjust your text</strong> to stay within {platform.name}'s{" "}
+            {platform.characterLimit.toLocaleString()}-character limit
+          </li>
+          <li>
+            <strong>Copy your optimized text</strong> and paste it into{" "}
+            {platform.name}
+          </li>
+        </ol>
+
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
+          Understanding the Counter
+        </h3>
+        <ul className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
+          <li>
+            <strong>Character Count:</strong> Total number of characters
+            including spaces and punctuation
+          </li>
+          <li>
+            <strong>Without Spaces:</strong> Character count excluding all
+            whitespace
+          </li>
+          <li>
+            <strong>Remaining:</strong> How many more characters you can add
+            before hitting the limit
+          </li>
+          <li>
+            <strong>Progress Bar:</strong> Visual indicator of how much of the
+            limit you've used
+          </li>
+          {platform.recommendedLimit && (
+            <li>
+              <strong>Recommended Limit:</strong> {platform.name} allows{" "}
+              {platform.characterLimit.toLocaleString()} characters, but posts
+              under {platform.recommendedLimit} characters often perform better
+            </li>
+          )}
+        </ul>
+
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-6">
+          <strong>Note:</strong> This tool counts characters locally in your
+          browser. Your text is never sent to any server, ensuring complete
+          privacy.
+        </p>
+      </>
+    );
+
+    const faqs = [
+      {
+        question: `What is ${platform.name}'s character limit?`,
+        answer: `${platform.name} allows up to ${platform.characterLimit.toLocaleString()} characters per ${
+          platform.contentType
+        }. ${
+          platform.recommendedLimit
+            ? `However, posts under ${platform.recommendedLimit} characters typically get better engagement.`
+            : ""
+        }`,
+      },
+      {
+        question: "How does this character counter work?",
+        answer:
+          "This tool counts characters in real-time as you type or paste text. It shows your total character count, remaining characters, and a visual progress bar. All counting happens locally in your browser for complete privacy.",
+      },
+      {
+        question: "What counts as a character?",
+        answer: `${platform.countingRules} The tool also shows a count without spaces for reference.`,
+      },
+      {
+        question: "What happens if I exceed the character limit?",
+        answer: `If your text exceeds ${platform.characterLimit.toLocaleString()} characters, ${
+          platform.name
+        } will either truncate it or prevent you from posting. The tool alerts you when you're over the limit so you can edit before posting.`,
+      },
+      {
+        question: "Is my text stored or sent anywhere?",
+        answer:
+          "No! This tool works entirely in your browser. Your text is never sent to any server or stored anywhere. It's completely private and secure.",
+      },
+      {
+        question: "How can Rybbit help me track my social media performance?",
+        answer: (
+          <>
+            Rybbit helps you track engagement, clicks, and performance of your{" "}
+            {platform.name} posts. See which content resonates with your
+            audience and optimize your strategy.{" "}
+            <a
+              href="https://rybbit.com"
+              className="text-emerald-600 hover:text-emerald-500 underline"
+            >
+              Start tracking for free
+            </a>
+            .
+          </>
+        ),
+      },
+    ];
+
+    return (
+      <ToolPageLayout
+        toolSlug={`${platform.id}-character-counter`}
+        title={platform.displayName}
+        description={platform.description}
+        badge="Free Tool"
+        toolComponent={<CharacterCounter platform={platform} />}
+        educationalContent={educationalContent}
+        faqs={faqs}
+        relatedToolsCategory="social-media"
+        ctaTitle={`Track your ${platform.name} performance with Rybbit`}
+        ctaDescription={`Monitor engagement and clicks from your ${platform.name} posts to optimize your content strategy.`}
+        ctaEventLocation={`${platform.id}_character_counter_cta`}
+        structuredData={structuredData}
+      />
+    );
+  }
 
   // Check if it's a hashtag generator
   if (slug.endsWith("-hashtag-generator")) {

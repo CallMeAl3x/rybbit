@@ -663,6 +663,72 @@ const allTools: Tool[] = [
     href: "/tools/tumblr-hashtag-generator",
     category: "social-media",
   },
+  {
+    name: "X (Twitter) Character Counter",
+    description: "Count characters for X posts and stay within the 280-character limit",
+    href: "/tools/x-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "Threads Character Counter",
+    description: "Count characters for Threads posts with 500-character limit tracking",
+    href: "/tools/threads-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "Instagram Caption Character Counter",
+    description: "Count characters for Instagram captions within the 2,200-character limit",
+    href: "/tools/instagram-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "Facebook Post Character Counter",
+    description: "Count characters for Facebook posts with recommended length guidance",
+    href: "/tools/facebook-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "LinkedIn Post Character Counter",
+    description: "Count characters for LinkedIn posts within the 3,000-character limit",
+    href: "/tools/linkedin-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "TikTok Caption Character Counter",
+    description: "Count characters for TikTok captions with 2,200-character limit",
+    href: "/tools/tiktok-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "YouTube Description Character Counter",
+    description: "Count characters for YouTube descriptions within 5,000-character limit",
+    href: "/tools/youtube-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "Pinterest Pin Description Counter",
+    description: "Count characters for Pinterest descriptions within 500-character limit",
+    href: "/tools/pinterest-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "Reddit Post Title Character Counter",
+    description: "Count characters for Reddit titles within the 300-character limit",
+    href: "/tools/reddit-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "Mastodon Post Character Counter",
+    description: "Count characters for Mastodon toots with 500-character default limit",
+    href: "/tools/mastodon-character-counter",
+    category: "social-media",
+  },
+  {
+    name: "Bluesky Post Character Counter",
+    description: "Count characters for Bluesky posts within the 300-character limit",
+    href: "/tools/bluesky-character-counter",
+    category: "social-media",
+  },
 ];
 
 interface RelatedToolsProps {
