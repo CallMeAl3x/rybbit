@@ -4,18 +4,13 @@ import AICommentForm from "../../components/AICommentForm";
 import PageNameGenerator from "../../components/PageNameGenerator";
 import PostGenerator from "../../components/PostGenerator";
 import UsernameGenerator from "../../components/UsernameGenerator";
+import ImageResizer from "../../components/ImageResizer";
 import { HashtagGenerator } from "../../components/HashtagGenerator";
 import { CharacterCounter } from "../../components/CharacterCounter";
 import { BioGenerator } from "../../components/BioGenerator";
 import { platformConfigs, platformList } from "../../components/platform-configs";
-import {
-  commentPlatformConfigs,
-  commentPlatformList,
-} from "../../components/comment-platform-configs";
-import {
-  pageNamePlatformConfigs,
-  pageNamePlatformList,
-} from "../../components/page-name-platform-configs";
+import { commentPlatformConfigs, commentPlatformList } from "../../components/comment-platform-configs";
+import { pageNamePlatformConfigs, pageNamePlatformList } from "../../components/page-name-platform-configs";
 import {
   postGeneratorPlatformConfigs,
   postGeneratorPlatformList,
@@ -32,10 +27,8 @@ import {
   characterCounterPlatformConfigs,
   characterCounterPlatformList,
 } from "../../components/character-counter-platform-configs";
-import {
-  bioGeneratorPlatformConfigs,
-  bioGeneratorPlatformList,
-} from "../../components/bio-generator-platform-configs";
+import { bioGeneratorPlatformConfigs, bioGeneratorPlatformList } from "../../components/bio-generator-platform-configs";
+import { imageResizerPlatformConfigs, imageResizerPlatformList } from "../../components/image-resizer-platform-configs";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -47,36 +40,40 @@ interface PageProps {
 
 // Generate static params for all platforms at build time
 export async function generateStaticParams() {
-  const fontGenerators = platformList.map((platform) => ({
+  const fontGenerators = platformList.map(platform => ({
     slug: `${platform.id}-font-generator`,
   }));
 
-  const commentGenerators = commentPlatformList.map((platform) => ({
+  const commentGenerators = commentPlatformList.map(platform => ({
     slug: `${platform.id}-comment-generator`,
   }));
 
-  const pageNameGenerators = pageNamePlatformList.map((platform) => ({
+  const pageNameGenerators = pageNamePlatformList.map(platform => ({
     slug: `${platform.id}-page-name-generator`,
   }));
 
-  const postGenerators = postGeneratorPlatformList.map((platform) => ({
+  const postGenerators = postGeneratorPlatformList.map(platform => ({
     slug: `${platform.id}-post-generator`,
   }));
 
-  const usernameGenerators = usernameGeneratorPlatformList.map((platform) => ({
+  const usernameGenerators = usernameGeneratorPlatformList.map(platform => ({
     slug: `${platform.id}-username-generator`,
   }));
 
-  const hashtagGenerators = hashtagGeneratorPlatformList.map((platform) => ({
+  const hashtagGenerators = hashtagGeneratorPlatformList.map(platform => ({
     slug: `${platform.id}-hashtag-generator`,
   }));
 
-  const characterCounters = characterCounterPlatformList.map((platform) => ({
+  const characterCounters = characterCounterPlatformList.map(platform => ({
     slug: `${platform.id}-character-counter`,
   }));
 
-  const bioGenerators = bioGeneratorPlatformList.map((platform) => ({
+  const bioGenerators = bioGeneratorPlatformList.map(platform => ({
     slug: `${platform.id}-bio-generator`,
+  }));
+
+  const imageResizers = imageResizerPlatformList.map(platform => ({
+    slug: `${platform.id}-photo-resizer`,
   }));
 
   return [
@@ -88,14 +85,43 @@ export async function generateStaticParams() {
     ...hashtagGenerators,
     ...characterCounters,
     ...bioGenerators,
+    ...imageResizers,
   ];
 }
 
 // Generate metadata dynamically based on slug
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+
+  // Check if it's an image resizer
+  if (slug.endsWith("-photo-resizer")) {
+    const platformId = slug.replace("-photo-resizer", "");
+    const platform = imageResizerPlatformConfigs[platformId];
+
+    if (!platform) {
+      return { title: "Photo Resizer Not Found" };
+    }
+
+    return {
+      title: `${platform.displayName} | Free Online Image Cropper`,
+      description: platform.description,
+      openGraph: {
+        title: platform.displayName,
+        description: platform.description,
+        type: "website",
+        url: `https://rybbit.com/tools/${platform.id}-photo-resizer`,
+        siteName: "Rybbit Documentation",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: platform.displayName,
+        description: platform.description,
+      },
+      alternates: {
+        canonical: `https://rybbit.com/tools/${platform.id}-photo-resizer`,
+      },
+    };
+  }
 
   // Check if it's a bio generator
   if (slug.endsWith("-bio-generator")) {
@@ -341,6 +367,111 @@ export async function generateMetadata({
 export default async function PlatformToolPage({ params }: PageProps) {
   const { slug } = await params;
 
+  // Check if it's an image resizer
+  if (slug.endsWith("-photo-resizer")) {
+    const platformId = slug.replace("-photo-resizer", "");
+    const platform = imageResizerPlatformConfigs[platformId];
+
+    if (!platform) {
+      notFound();
+    }
+
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: platform.displayName,
+      description: platform.description,
+      url: `https://rybbit.com/tools/${platform.id}-photo-resizer`,
+      applicationCategory: "MultimediaApplication",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      author: {
+        "@type": "Organization",
+        name: "Rybbit",
+        url: "https://rybbit.com",
+      },
+    };
+
+    const educationalContent = (
+      <>
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">About {platform.name} Image Sizes</h2>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">{platform.educationalContent}</p>
+
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">How to Use This Tool</h3>
+        <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
+          <li>
+            <strong>Upload your image</strong> - Drag and drop or click to select
+          </li>
+          <li>
+            <strong>Select the format</strong> - Choose from {platform.dimensions.length} presets (Profile, Cover, Post,
+            etc.)
+          </li>
+          <li>
+            <strong>Adjust the crop</strong> - Zoom, rotate, and position your image
+          </li>
+          <li>
+            <strong>Download</strong> - Get your perfectly sized image instantly
+          </li>
+        </ol>
+
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
+          Standard {platform.name} Dimensions
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {platform.dimensions.map(dim => (
+            <div
+              key={dim.label}
+              className="p-4 bg-neutral-50 dark:bg-neutral-900/20 rounded-lg border border-neutral-200 dark:border-neutral-800"
+            >
+              <div className="font-semibold text-neutral-900 dark:text-white">{dim.label}</div>
+              <div className="text-emerald-600 dark:text-emerald-400 font-mono text-sm">
+                {dim.width} x {dim.height} px
+              </div>
+              {dim.description && <div className="text-xs text-neutral-500 mt-1">{dim.description}</div>}
+            </div>
+          ))}
+        </div>
+      </>
+    );
+
+    const faqs = [
+      {
+        question: `What are the best image sizes for ${platform.name}?`,
+        answer: `${platform.name} recommends different sizes for different placements. For example, profile pictures should be ${platform.dimensions[0].width}x${platform.dimensions[0].height}px. This tool includes all the standard dimensions to ensure your images look crisp.`,
+      },
+      {
+        question: "Does this tool compress my images?",
+        answer:
+          "This tool resizes and crops your images to the exact dimensions required by the platform. It maintains high quality while ensuring the file size is optimized for web upload.",
+      },
+      {
+        question: "Is my image uploaded to a server?",
+        answer:
+          "No! All processing happens locally in your browser. Your images never leave your device, ensuring complete privacy and security.",
+      },
+    ];
+
+    return (
+      <ToolPageLayout
+        toolSlug={`${platform.id}-photo-resizer`}
+        title={platform.displayName}
+        description={platform.description}
+        badge="Free Tool"
+        toolComponent={<ImageResizer platform={platform} />}
+        educationalContent={educationalContent}
+        faqs={faqs}
+        relatedToolsCategory="social-media"
+        ctaTitle={`Enhance your ${platform.name} visuals with Rybbit`}
+        ctaDescription="Track engagement on your perfectly sized images."
+        ctaEventLocation={`${platform.id}_photo_resizer_cta`}
+        structuredData={structuredData}
+      />
+    );
+  }
+
   // Check if it's a bio generator
   if (slug.endsWith("-bio-generator")) {
     const platformId = slug.replace("-bio-generator", "");
@@ -375,44 +506,33 @@ export default async function PlatformToolPage({ params }: PageProps) {
         <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
           About {platform.name} {platform.bioType}s
         </h2>
-        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">
-          {platform.educationalContent}
-        </p>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">{platform.educationalContent}</p>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          How to Use This Tool
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">How to Use This Tool</h3>
         <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Enter your name or brand</strong> - What should the bio be
-            about?
+            <strong>Enter your name or brand</strong> - What should the bio be about?
           </li>
           <li>
             <strong>Add your profession or role</strong> - What do you do?
           </li>
           <li>
-            <strong>Include interests (optional)</strong> - What are you
-            passionate about?
+            <strong>Include interests (optional)</strong> - What are you passionate about?
           </li>
           <li>
-            <strong>Select your tone</strong> - Choose from{" "}
-            {platform.tones.length} tone options
+            <strong>Select your tone</strong> - Choose from {platform.tones.length} tone options
           </li>
           <li>
-            <strong>Click "Generate {platform.bioType}"</strong> to get 3
-            unique variations
+            <strong>Click "Generate {platform.bioType}"</strong> to get 3 unique variations
           </li>
           <li>
-            <strong>Copy and customize</strong> your favorite bio for{" "}
-            {platform.name}
+            <strong>Copy and customize</strong> your favorite bio for {platform.name}
           </li>
         </ol>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          Available Tones
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Available Tones</h3>
         <ul className="grid grid-cols-2 gap-2 text-sm text-neutral-700 dark:text-neutral-300 mb-6">
-          {platform.tones.map((tone) => (
+          {platform.tones.map(tone => (
             <li key={tone} className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               {tone}
@@ -428,41 +548,33 @@ export default async function PlatformToolPage({ params }: PageProps) {
             <strong>Be authentic:</strong> Let your personality shine through
           </li>
           <li>
-            <strong>Front-load important info:</strong> Put key information at
-            the beginning
+            <strong>Front-load important info:</strong> Put key information at the beginning
           </li>
           <li>
-            <strong>Include a call-to-action:</strong> Tell people what to do
-            next
+            <strong>Include a call-to-action:</strong> Tell people what to do next
           </li>
           <li>
-            <strong>Use keywords:</strong> Include relevant terms for
-            discoverability
+            <strong>Use keywords:</strong> Include relevant terms for discoverability
           </li>
           <li>
-            <strong>Stay within the limit:</strong> Keep it under{" "}
-            {platform.characterLimit} characters
+            <strong>Stay within the limit:</strong> Keep it under {platform.characterLimit} characters
           </li>
           <li>
-            <strong>Update regularly:</strong> Keep your bio current with your
-            focus
+            <strong>Update regularly:</strong> Keep your bio current with your focus
           </li>
         </ul>
 
         <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
-          <h4 className="font-semibold text-emerald-900 dark:text-emerald-100 mb-2">
-            Character Limit
-          </h4>
+          <h4 className="font-semibold text-emerald-900 dark:text-emerald-100 mb-2">Character Limit</h4>
           <p className="text-sm text-emerald-800 dark:text-emerald-200">
-            {platform.name} {platform.bioType}s have a maximum of{" "}
-            {platform.characterLimit} characters. Make every character count!
+            {platform.name} {platform.bioType}s have a maximum of {platform.characterLimit} characters. Make every
+            character count!
           </p>
         </div>
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-6">
-          <strong>Note:</strong> While this tool generates high-quality bios,
-          always personalize them to match your authentic voice and current
-          focus. The best bios are genuine and reflect who you really are.
+          <strong>Note:</strong> While this tool generates high-quality bios, always personalize them to match your
+          authentic voice and current focus. The best bios are genuine and reflect who you really are.
         </p>
       </>
     );
@@ -474,7 +586,11 @@ export default async function PlatformToolPage({ params }: PageProps) {
       },
       {
         question: "What tones are available?",
-        answer: `You can choose from ${platform.tones.length} tones: ${platform.tones.join(", ")}. Each tone is optimized for ${platform.name} and creates a different impression to match your personal brand.`,
+        answer: `You can choose from ${platform.tones.length} tones: ${platform.tones.join(
+          ", "
+        )}. Each tone is optimized for ${
+          platform.name
+        } and creates a different impression to match your personal brand.`,
       },
       {
         question: "Should I edit the generated bios?",
@@ -494,13 +610,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         question: "How can Rybbit help me grow on social media?",
         answer: (
           <>
-            Once you have a great bio, Rybbit helps you track engagement,
-            clicks, and growth on {platform.name}. Understand what content
-            resonates with your audience and optimize your strategy.{" "}
-            <a
-              href="https://rybbit.com"
-              className="text-emerald-600 hover:text-emerald-500 underline"
-            >
+            Once you have a great bio, Rybbit helps you track engagement, clicks, and growth on {platform.name}.
+            Understand what content resonates with your audience and optimize your strategy.{" "}
+            <a href="https://rybbit.com" className="text-emerald-600 hover:text-emerald-500 underline">
               Start tracking for free
             </a>
             .
@@ -561,13 +673,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
           About {platform.name} Character Limits
         </h2>
-        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">
-          {platform.educationalContent}
-        </p>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">{platform.educationalContent}</p>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          How to Use This Tool
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">How to Use This Tool</h3>
         <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
             <strong>Type or paste your text</strong> into the text area above
@@ -576,52 +684,42 @@ export default async function PlatformToolPage({ params }: PageProps) {
             <strong>Watch the character count</strong> update in real-time
           </li>
           <li>
-            <strong>Monitor the progress bar</strong> to see how close you are
-            to the limit
+            <strong>Monitor the progress bar</strong> to see how close you are to the limit
           </li>
           <li>
             <strong>Adjust your text</strong> to stay within {platform.name}'s{" "}
             {platform.characterLimit.toLocaleString()}-character limit
           </li>
           <li>
-            <strong>Copy your optimized text</strong> and paste it into{" "}
-            {platform.name}
+            <strong>Copy your optimized text</strong> and paste it into {platform.name}
           </li>
         </ol>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          Understanding the Counter
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Understanding the Counter</h3>
         <ul className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Character Count:</strong> Total number of characters
-            including spaces and punctuation
+            <strong>Character Count:</strong> Total number of characters including spaces and punctuation
           </li>
           <li>
-            <strong>Without Spaces:</strong> Character count excluding all
-            whitespace
+            <strong>Without Spaces:</strong> Character count excluding all whitespace
           </li>
           <li>
-            <strong>Remaining:</strong> How many more characters you can add
-            before hitting the limit
+            <strong>Remaining:</strong> How many more characters you can add before hitting the limit
           </li>
           <li>
-            <strong>Progress Bar:</strong> Visual indicator of how much of the
-            limit you've used
+            <strong>Progress Bar:</strong> Visual indicator of how much of the limit you've used
           </li>
           {platform.recommendedLimit && (
             <li>
-              <strong>Recommended Limit:</strong> {platform.name} allows{" "}
-              {platform.characterLimit.toLocaleString()} characters, but posts
-              under {platform.recommendedLimit} characters often perform better
+              <strong>Recommended Limit:</strong> {platform.name} allows {platform.characterLimit.toLocaleString()}{" "}
+              characters, but posts under {platform.recommendedLimit} characters often perform better
             </li>
           )}
         </ul>
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-6">
-          <strong>Note:</strong> This tool counts characters locally in your
-          browser. Your text is never sent to any server, ensuring complete
-          privacy.
+          <strong>Note:</strong> This tool counts characters locally in your browser. Your text is never sent to any
+          server, ensuring complete privacy.
         </p>
       </>
     );
@@ -661,13 +759,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         question: "How can Rybbit help me track my social media performance?",
         answer: (
           <>
-            Rybbit helps you track engagement, clicks, and performance of your{" "}
-            {platform.name} posts. See which content resonates with your
-            audience and optimize your strategy.{" "}
-            <a
-              href="https://rybbit.com"
-              className="text-emerald-600 hover:text-emerald-500 underline"
-            >
+            Rybbit helps you track engagement, clicks, and performance of your {platform.name} posts. See which content
+            resonates with your audience and optimize your strategy.{" "}
+            <a href="https://rybbit.com" className="text-emerald-600 hover:text-emerald-500 underline">
               Start tracking for free
             </a>
             .
@@ -725,42 +819,32 @@ export default async function PlatformToolPage({ params }: PageProps) {
 
     const educationalContent = (
       <>
-        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
-          About {platform.name} Hashtags
-        </h2>
-        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">
-          {platform.educationalContent}
-        </p>
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">About {platform.name} Hashtags</h2>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">{platform.educationalContent}</p>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          How to Use This Tool
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">How to Use This Tool</h3>
         <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
             <strong>Describe your content</strong> - What is your post about?
           </li>
           <li>
-            <strong>Select a strategy</strong> - Choose from{" "}
-            {platform.hashtagStrategies.length} platform-optimized strategies
+            <strong>Select a strategy</strong> - Choose from {platform.hashtagStrategies.length} platform-optimized
+            strategies
           </li>
           <li>
-            <strong>Add niche keywords (optional)</strong> - Include specific
-            topics or interests
+            <strong>Add niche keywords (optional)</strong> - Include specific topics or interests
           </li>
           <li>
             <strong>Click "Generate Hashtags"</strong> to get 3 unique sets
           </li>
           <li>
-            <strong>Copy and use</strong> your favorite hashtag set on{" "}
-            {platform.name}
+            <strong>Copy and use</strong> your favorite hashtag set on {platform.name}
           </li>
         </ol>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          Available Hashtag Strategies
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Available Hashtag Strategies</h3>
         <ul className="grid grid-cols-2 gap-2 text-sm text-neutral-700 dark:text-neutral-300 mb-6">
-          {platform.hashtagStrategies.map((strategy) => (
+          {platform.hashtagStrategies.map(strategy => (
             <li key={strategy} className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               {strategy}
@@ -773,40 +857,32 @@ export default async function PlatformToolPage({ params }: PageProps) {
         </h3>
         <ul className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Use relevant hashtags:</strong> Choose hashtags that
-            accurately describe your content
+            <strong>Use relevant hashtags:</strong> Choose hashtags that accurately describe your content
           </li>
           <li>
-            <strong>Mix popular and niche:</strong> Combine high-volume hashtags
-            with specific niche tags
+            <strong>Mix popular and niche:</strong> Combine high-volume hashtags with specific niche tags
           </li>
           <li>
-            <strong>Research trending tags:</strong> Stay current with trending
-            topics in your niche
+            <strong>Research trending tags:</strong> Stay current with trending topics in your niche
           </li>
           <li>
-            <strong>Don't overuse:</strong> Follow platform-specific best
-            practices for hashtag counts
+            <strong>Don't overuse:</strong> Follow platform-specific best practices for hashtag counts
           </li>
           <li>
-            <strong>Track performance:</strong> Monitor which hashtags drive the
-            most engagement
+            <strong>Track performance:</strong> Monitor which hashtags drive the most engagement
           </li>
         </ul>
 
         {platform.maxHashtags && (
           <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
-            <h4 className="font-semibold text-emerald-900 dark:text-emerald-100 mb-2">
-              Platform Guidelines
-            </h4>
+            <h4 className="font-semibold text-emerald-900 dark:text-emerald-100 mb-2">Platform Guidelines</h4>
             <ul className="space-y-1 text-sm text-emerald-800 dark:text-emerald-200">
               <li>
                 <strong>Maximum hashtags:</strong> {platform.maxHashtags}
               </li>
               {platform.characterLimit && (
                 <li>
-                  <strong>Character limit:</strong> {platform.characterLimit}{" "}
-                  total characters
+                  <strong>Character limit:</strong> {platform.characterLimit} total characters
                 </li>
               )}
             </ul>
@@ -814,10 +890,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         )}
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-6">
-          <strong>Note:</strong> While this tool generates strategic hashtags,
-          always review and customize them based on your specific content and
-          audience. The most effective hashtags are relevant, timely, and
-          authentic to your brand.
+          <strong>Note:</strong> While this tool generates strategic hashtags, always review and customize them based on
+          your specific content and audience. The most effective hashtags are relevant, timely, and authentic to your
+          brand.
         </p>
       </>
     );
@@ -829,7 +904,11 @@ export default async function PlatformToolPage({ params }: PageProps) {
       },
       {
         question: "What hashtag strategies are available?",
-        answer: `You can choose from ${platform.hashtagStrategies.length} strategies: ${platform.hashtagStrategies.join(", ")}. Each strategy is optimized for ${platform.name} and designed to help you achieve different goals like viral reach, niche engagement, or community building.`,
+        answer: `You can choose from ${platform.hashtagStrategies.length} strategies: ${platform.hashtagStrategies.join(
+          ", "
+        )}. Each strategy is optimized for ${
+          platform.name
+        } and designed to help you achieve different goals like viral reach, niche engagement, or community building.`,
       },
       {
         question: "Should I use all the generated hashtags?",
@@ -848,13 +927,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         question: "How can Rybbit help me track hashtag performance?",
         answer: (
           <>
-            Rybbit helps you measure which content and hashtags drive the most
-            engagement on {platform.name}. Track clicks, traffic sources, and
-            content performance to optimize your hashtag strategy.{" "}
-            <a
-              href="https://rybbit.com"
-              className="text-emerald-600 hover:text-emerald-500 underline"
-            >
+            Rybbit helps you measure which content and hashtags drive the most engagement on {platform.name}. Track
+            clicks, traffic sources, and content performance to optimize your hashtag strategy.{" "}
+            <a href="https://rybbit.com" className="text-emerald-600 hover:text-emerald-500 underline">
               Start tracking for free
             </a>
             .
@@ -912,36 +987,25 @@ export default async function PlatformToolPage({ params }: PageProps) {
 
     const educationalContent = (
       <>
-        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
-          About {platform.name} Usernames
-        </h2>
-        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">
-          {platform.educationalContent}
-        </p>
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">About {platform.name} Usernames</h2>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">{platform.educationalContent}</p>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          How to Use This Tool
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">How to Use This Tool</h3>
         <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Enter your name or brand</strong> - What should the
-            username be based on?
+            <strong>Enter your name or brand</strong> - What should the username be based on?
           </li>
           <li>
-            <strong>Add interests (optional)</strong> - Include keywords or
-            interests to incorporate
+            <strong>Add interests (optional)</strong> - Include keywords or interests to incorporate
           </li>
           <li>
-            <strong>Choose number preference</strong> - Decide if you want
-            numbers included
+            <strong>Choose number preference</strong> - Decide if you want numbers included
           </li>
           <li>
-            <strong>Click "Generate Usernames"</strong> to get 5 unique
-            suggestions
+            <strong>Click "Generate Usernames"</strong> to get 5 unique suggestions
           </li>
           <li>
-            <strong>Check availability</strong> on {platform.name} and claim
-            your favorite
+            <strong>Check availability</strong> on {platform.name} and claim your favorite
           </li>
         </ol>
 
@@ -950,55 +1014,44 @@ export default async function PlatformToolPage({ params }: PageProps) {
         </h3>
         <ul className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Keep it memorable:</strong> Choose something easy to spell
-            and remember
+            <strong>Keep it memorable:</strong> Choose something easy to spell and remember
           </li>
           <li>
-            <strong>Make it brandable:</strong> Think long-term - will this
-            still work in 5 years?
+            <strong>Make it brandable:</strong> Think long-term - will this still work in 5 years?
           </li>
           <li>
-            <strong>Avoid excessive numbers:</strong> Numbers make usernames
-            harder to remember and share
+            <strong>Avoid excessive numbers:</strong> Numbers make usernames harder to remember and share
           </li>
           <li>
-            <strong>Check availability:</strong> Always verify the username is
-            available before committing
+            <strong>Check availability:</strong> Always verify the username is available before committing
           </li>
           <li>
-            <strong>Be consistent:</strong> Use the same or similar username
-            across platforms when possible
+            <strong>Be consistent:</strong> Use the same or similar username across platforms when possible
           </li>
         </ul>
 
         <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
-          <h4 className="font-semibold text-emerald-900 dark:text-emerald-100 mb-2">
-            Platform Requirements
-          </h4>
+          <h4 className="font-semibold text-emerald-900 dark:text-emerald-100 mb-2">Platform Requirements</h4>
           <ul className="space-y-1 text-sm text-emerald-800 dark:text-emerald-200">
             <li>
-              <strong>Allowed characters:</strong>{" "}
-              {platform.allowedCharacters}
+              <strong>Allowed characters:</strong> {platform.allowedCharacters}
             </li>
             {platform.characterLimit && (
               <li>
-                <strong>Maximum length:</strong> {platform.characterLimit}{" "}
-                characters
+                <strong>Maximum length:</strong> {platform.characterLimit} characters
               </li>
             )}
             {platform.minLength && (
               <li>
-                <strong>Minimum length:</strong> {platform.minLength}{" "}
-                characters
+                <strong>Minimum length:</strong> {platform.minLength} characters
               </li>
             )}
           </ul>
         </div>
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-6">
-          <strong>Note:</strong> Always check availability on {platform.name}{" "}
-          before settling on a username. Generated suggestions are not
-          guaranteed to be available.
+          <strong>Note:</strong> Always check availability on {platform.name} before settling on a username. Generated
+          suggestions are not guaranteed to be available.
         </p>
       </>
     );
@@ -1030,13 +1083,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         question: "How can Rybbit help me grow my presence?",
         answer: (
           <>
-            Once you've claimed your username, Rybbit helps you track
-            engagement, clicks, and growth on {platform.name}. Understand your
-            audience and optimize your content strategy.{" "}
-            <a
-              href="https://rybbit.com"
-              className="text-emerald-600 hover:text-emerald-500 underline"
-            >
+            Once you've claimed your username, Rybbit helps you track engagement, clicks, and growth on {platform.name}.
+            Understand your audience and optimize your content strategy.{" "}
+            <a href="https://rybbit.com" className="text-emerald-600 hover:text-emerald-500 underline">
               Start tracking for free
             </a>
             .
@@ -1094,43 +1143,31 @@ export default async function PlatformToolPage({ params }: PageProps) {
 
     const educationalContent = (
       <>
-        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
-          About {platform.name} Posts
-        </h2>
-        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">
-          {platform.educationalContent}
-        </p>
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">About {platform.name} Posts</h2>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">{platform.educationalContent}</p>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          How to Use This Tool
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">How to Use This Tool</h3>
         <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Describe your topic</strong> - What do you want to post
-            about?
+            <strong>Describe your topic</strong> - What do you want to post about?
           </li>
           <li>
-            <strong>Select a style</strong> - Choose from{" "}
-            {platform.recommendedStyles.length} platform-optimized styles
+            <strong>Select a style</strong> - Choose from {platform.recommendedStyles.length} platform-optimized styles
           </li>
           <li>
-            <strong>Add context (optional)</strong> - Include specific details,
-            CTAs, or hashtags
+            <strong>Add context (optional)</strong> - Include specific details, CTAs, or hashtags
           </li>
           <li>
             <strong>Click "Generate Posts"</strong> to get 3 unique variations
           </li>
           <li>
-            <strong>Copy and customize</strong> your favorite post before
-            publishing
+            <strong>Copy and customize</strong> your favorite post before publishing
           </li>
         </ol>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          Available Post Styles
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Available Post Styles</h3>
         <ul className="grid grid-cols-2 gap-2 text-sm text-neutral-700 dark:text-neutral-300 mb-6">
-          {platform.recommendedStyles.map((style) => (
+          {platform.recommendedStyles.map(style => (
             <li key={style} className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               {style}
@@ -1143,31 +1180,25 @@ export default async function PlatformToolPage({ params }: PageProps) {
         </h3>
         <ul className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Be authentic:</strong> Personalize AI-generated content to
-            match your voice
+            <strong>Be authentic:</strong> Personalize AI-generated content to match your voice
           </li>
           <li>
-            <strong>Add value:</strong> Ensure your post provides insights,
-            entertainment, or useful information
+            <strong>Add value:</strong> Ensure your post provides insights, entertainment, or useful information
           </li>
           <li>
-            <strong>Engage your audience:</strong> Include questions or CTAs to
-            encourage interaction
+            <strong>Engage your audience:</strong> Include questions or CTAs to encourage interaction
           </li>
           <li>
-            <strong>Optimize timing:</strong> Post when your audience is most
-            active
+            <strong>Optimize timing:</strong> Post when your audience is most active
           </li>
           <li>
-            <strong>Review before posting:</strong> Always edit and customize
-            generated content
+            <strong>Review before posting:</strong> Always edit and customize generated content
           </li>
         </ul>
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-6">
-          <strong>Note:</strong> While this tool generates high-quality posts,
-          always review and personalize content before publishing. Authentic
-          engagement comes from adding your unique perspective and voice.
+          <strong>Note:</strong> While this tool generates high-quality posts, always review and personalize content
+          before publishing. Authentic engagement comes from adding your unique perspective and voice.
         </p>
       </>
     );
@@ -1179,7 +1210,11 @@ export default async function PlatformToolPage({ params }: PageProps) {
       },
       {
         question: "What post styles are available?",
-        answer: `You can choose from ${platform.recommendedStyles.length} styles: ${platform.recommendedStyles.join(", ")}. Each style is optimized for ${platform.name} and designed to maximize engagement for different types of content.`,
+        answer: `You can choose from ${platform.recommendedStyles.length} styles: ${platform.recommendedStyles.join(
+          ", "
+        )}. Each style is optimized for ${
+          platform.name
+        } and designed to maximize engagement for different types of content.`,
       },
       {
         question: "Should I edit the generated posts?",
@@ -1199,13 +1234,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         question: "How can Rybbit help me measure post performance?",
         answer: (
           <>
-            Rybbit tracks clicks, engagement, and traffic from your{" "}
-            {platform.name} posts. See which content drives the most interaction
-            and optimize your social media strategy.{" "}
-            <a
-              href="https://rybbit.com"
-              className="text-emerald-600 hover:text-emerald-500 underline"
-            >
+            Rybbit tracks clicks, engagement, and traffic from your {platform.name} posts. See which content drives the
+            most interaction and optimize your social media strategy.{" "}
+            <a href="https://rybbit.com" className="text-emerald-600 hover:text-emerald-500 underline">
               Start tracking for free
             </a>
             .
@@ -1266,21 +1297,16 @@ export default async function PlatformToolPage({ params }: PageProps) {
         <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
           About {platform.name} {platform.pageType} Names
         </h2>
-        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">
-          {platform.educationalContent}
-        </p>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">{platform.educationalContent}</p>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          How to Use This Tool
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">How to Use This Tool</h3>
         <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Describe your {platform.pageType.toLowerCase()}</strong> -
-            What's it about? What topics will you cover?
+            <strong>Describe your {platform.pageType.toLowerCase()}</strong> - What's it about? What topics will you
+            cover?
           </li>
           <li>
-            <strong>Add keywords (optional)</strong> - Include specific terms
-            you want in the name
+            <strong>Add keywords (optional)</strong> - Include specific terms you want in the name
           </li>
           <li>
             <strong>Choose name length</strong> - Short, medium, or long
@@ -1289,8 +1315,7 @@ export default async function PlatformToolPage({ params }: PageProps) {
             <strong>Click "Generate Names"</strong> to get 5 unique suggestions
           </li>
           <li>
-            <strong>Copy your favorite</strong> and use it for your{" "}
-            {platform.name} {platform.pageType.toLowerCase()}
+            <strong>Copy your favorite</strong> and use it for your {platform.name} {platform.pageType.toLowerCase()}
           </li>
         </ol>
 
@@ -1299,31 +1324,26 @@ export default async function PlatformToolPage({ params }: PageProps) {
         </h3>
         <ul className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Keep it memorable:</strong> Choose a name that's easy to
-            remember and spell
+            <strong>Keep it memorable:</strong> Choose a name that's easy to remember and spell
           </li>
           <li>
-            <strong>Make it relevant:</strong> The name should clearly reflect
-            your content or purpose
+            <strong>Make it relevant:</strong> The name should clearly reflect your content or purpose
           </li>
           <li>
-            <strong>Consider SEO:</strong> Include keywords that people might
-            search for
+            <strong>Consider SEO:</strong> Include keywords that people might search for
           </li>
           <li>
-            <strong>Check availability:</strong> Make sure the name isn't
-            already taken on {platform.name}
+            <strong>Check availability:</strong> Make sure the name isn't already taken on {platform.name}
           </li>
           <li>
-            <strong>Think long-term:</strong> Choose a name that will still work
-            as your {platform.pageType.toLowerCase()} grows
+            <strong>Think long-term:</strong> Choose a name that will still work as your{" "}
+            {platform.pageType.toLowerCase()} grows
           </li>
         </ul>
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-6">
-          <strong>Note:</strong> Always check if your chosen name is available
-          on {platform.name} before committing to it. The best names are unique,
-          memorable, and accurately represent your content.
+          <strong>Note:</strong> Always check if your chosen name is available on {platform.name} before committing to
+          it. The best names are unique, memorable, and accurately represent your content.
         </p>
       </>
     );
@@ -1357,13 +1377,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         question: "How can Rybbit help me grow my presence?",
         answer: (
           <>
-            Rybbit helps you track engagement, clicks, and traffic sources from
-            your {platform.name} presence. Understand what content resonates with
-            your audience and optimize your strategy.{" "}
-            <a
-              href="https://rybbit.com"
-              className="text-emerald-600 hover:text-emerald-500 underline"
-            >
+            Rybbit helps you track engagement, clicks, and traffic sources from your {platform.name} presence.
+            Understand what content resonates with your audience and optimize your strategy.{" "}
+            <a href="https://rybbit.com" className="text-emerald-600 hover:text-emerald-500 underline">
               Start tracking for free
             </a>
             .
@@ -1383,7 +1399,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         faqs={faqs}
         relatedToolsCategory="social-media"
         ctaTitle={`Grow your ${platform.name} presence with Rybbit`}
-        ctaDescription={`Track performance and engagement from your ${platform.name} ${platform.pageType.toLowerCase()} to understand what works.`}
+        ctaDescription={`Track performance and engagement from your ${
+          platform.name
+        } ${platform.pageType.toLowerCase()} to understand what works.`}
         ctaEventLocation={`${platform.id}_page_name_generator_cta`}
         structuredData={structuredData}
       />
@@ -1421,35 +1439,25 @@ export default async function PlatformToolPage({ params }: PageProps) {
 
     const educationalContent = (
       <>
-        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
-          About {platform.name} Comments
-        </h2>
-        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">
-          {platform.educationalContent}
-        </p>
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">About {platform.name} Comments</h2>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">{platform.educationalContent}</p>
 
-        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-          How to Use This Tool
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">How to Use This Tool</h3>
         <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Paste the original content</strong> you want to comment on
-            in the text area
+            <strong>Paste the original content</strong> you want to comment on in the text area
           </li>
           <li>
-            <strong>Select your desired tone</strong> (friendly, professional,
-            humorous, etc.)
+            <strong>Select your desired tone</strong> (friendly, professional, humorous, etc.)
           </li>
           <li>
             <strong>Choose comment length</strong> based on your preference
           </li>
           <li>
-            <strong>Click "Generate Comments"</strong> to create 3 unique
-            variations
+            <strong>Click "Generate Comments"</strong> to create 3 unique variations
           </li>
           <li>
-            <strong>Copy your favorite</strong> and paste it into{" "}
-            {platform.name}
+            <strong>Copy your favorite</strong> and paste it into {platform.name}
           </li>
         </ol>
 
@@ -1458,31 +1466,25 @@ export default async function PlatformToolPage({ params }: PageProps) {
         </h3>
         <ul className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
           <li>
-            <strong>Be authentic:</strong> Even AI-generated comments should
-            feel genuine and personal
+            <strong>Be authentic:</strong> Even AI-generated comments should feel genuine and personal
           </li>
           <li>
-            <strong>Add context:</strong> Reference specific parts of the
-            original content
+            <strong>Add context:</strong> Reference specific parts of the original content
           </li>
           <li>
-            <strong>Encourage dialogue:</strong> Ask questions or invite further
-            discussion
+            <strong>Encourage dialogue:</strong> Ask questions or invite further discussion
           </li>
           <li>
-            <strong>Match the tone:</strong> Respect the original post's mood
-            and purpose
+            <strong>Match the tone:</strong> Respect the original post's mood and purpose
           </li>
           <li>
-            <strong>Personalize before posting:</strong> Edit generated comments
-            to add your unique voice
+            <strong>Personalize before posting:</strong> Edit generated comments to add your unique voice
           </li>
         </ul>
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-6">
-          <strong>Note:</strong> While this tool generates comments using AI,
-          always review and personalize them before posting. Authentic
-          engagement is key to building genuine connections on {platform.name}.
+          <strong>Note:</strong> While this tool generates comments using AI, always review and personalize them before
+          posting. Authentic engagement is key to building genuine connections on {platform.name}.
         </p>
       </>
     );
@@ -1506,9 +1508,8 @@ export default async function PlatformToolPage({ params }: PageProps) {
         question: "How many comments can I generate?",
         answer: (
           <>
-            The tool generates 3 unique comment variations per request. You're
-            limited to 5 requests per minute to ensure fair usage and maintain
-            service quality for all users.
+            The tool generates 3 unique comment variations per request. You're limited to 5 requests per minute to
+            ensure fair usage and maintain service quality for all users.
           </>
         ),
       },
@@ -1520,14 +1521,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
         question: "How can Rybbit help me track comment engagement?",
         answer: (
           <>
-            Rybbit helps you measure which content drives the most engagement
-            and comments on your social media. Track clicks, traffic sources,
-            and content performance to understand what resonates with your
-            audience.{" "}
-            <a
-              href="https://rybbit.com"
-              className="text-emerald-600 hover:text-emerald-500 underline"
-            >
+            Rybbit helps you measure which content drives the most engagement and comments on your social media. Track
+            clicks, traffic sources, and content performance to understand what resonates with your audience.{" "}
+            <a href="https://rybbit.com" className="text-emerald-600 hover:text-emerald-500 underline">
               Start tracking for free
             </a>
             .
@@ -1584,16 +1580,10 @@ export default async function PlatformToolPage({ params }: PageProps) {
 
   const educationalContent = (
     <>
-      <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
-        About {platform.name} Font Styles
-      </h2>
-      <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">
-        {platform.educationalContent}
-      </p>
+      <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">About {platform.name} Font Styles</h2>
+      <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6">{platform.educationalContent}</p>
 
-      <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
-        How to Use
-      </h3>
+      <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">How to Use</h3>
       <ol className="space-y-2 text-neutral-700 dark:text-neutral-300 mb-6">
         <li>
           <strong>Type your text</strong> in the input box above
@@ -1605,15 +1595,13 @@ export default async function PlatformToolPage({ params }: PageProps) {
           <strong>Click "Copy"</strong> on any style you like
         </li>
         <li>
-          <strong>Paste it</strong> into your {platform.name} posts, comments,
-          or bio
+          <strong>Paste it</strong> into your {platform.name} posts, comments, or bio
         </li>
       </ol>
 
       <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-6">
-        <strong>Note:</strong> These fonts use Unicode characters and work
-        across most platforms and devices. However, some fonts may not display
-        correctly on older systems or certain applications.
+        <strong>Note:</strong> These fonts use Unicode characters and work across most platforms and devices. However,
+        some fonts may not display correctly on older systems or certain applications.
       </p>
     </>
   );
@@ -1645,13 +1633,9 @@ export default async function PlatformToolPage({ params }: PageProps) {
       question: "How can Rybbit help me track my social media performance?",
       answer: (
         <>
-          Rybbit helps you track clicks, engagement, and traffic sources from
-          your {platform.name} posts and bio links. See which content drives the
-          most engagement and optimize your social media strategy.{" "}
-          <a
-            href="https://rybbit.com"
-            className="text-emerald-600 hover:text-emerald-500 underline"
-          >
+          Rybbit helps you track clicks, engagement, and traffic sources from your {platform.name} posts and bio links.
+          See which content drives the most engagement and optimize your social media strategy.{" "}
+          <a href="https://rybbit.com" className="text-emerald-600 hover:text-emerald-500 underline">
             Start tracking for free
           </a>
           .
@@ -1666,12 +1650,7 @@ export default async function PlatformToolPage({ params }: PageProps) {
       title={platform.displayName}
       description={platform.description}
       badge="Free Tool"
-      toolComponent={
-        <FontGeneratorTool
-          platformName={platform.name}
-          characterLimit={platform.characterLimit}
-        />
-      }
+      toolComponent={<FontGeneratorTool platformName={platform.name} characterLimit={platform.characterLimit} />}
       educationalContent={educationalContent}
       faqs={fontFaqs}
       relatedToolsCategory="social-media"

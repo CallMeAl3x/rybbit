@@ -30,6 +30,7 @@ import { usernameGeneratorPlatformList } from "./components/username-generator-p
 import { hashtagGeneratorPlatformList } from "./components/hashtag-generator-platform-configs";
 import { characterCounterPlatformList } from "./components/character-counter-platform-configs";
 import { bioGeneratorPlatformList } from "./components/bio-generator-platform-configs";
+import { imageResizerPlatformList } from "./components/image-resizer-platform-configs";
 import {
   SiDiscord,
   SiX,
@@ -300,6 +301,13 @@ const bioGeneratorTools = bioGeneratorPlatformList.map(platform => ({
   description: `Generate compelling ${platform.name} bios with AI.`,
 }));
 
+const imageResizerTools = imageResizerPlatformList.map(platform => ({
+  href: `/tools/${platform.id}-photo-resizer`,
+  icon: platformIconMap[platform.id],
+  title: platform.displayName,
+  description: `Resize and crop images for ${platform.name} profiles, covers, and posts.`,
+}));
+
 const socialMediaTools = [
   ...fontGeneratorTools,
   ...commentGeneratorTools,
@@ -309,6 +317,7 @@ const socialMediaTools = [
   ...hashtagGeneratorTools,
   ...characterCounterTools,
   ...bioGeneratorTools,
+  ...imageResizerTools,
 ];
 
 function ToolCard({ tool }: { tool: { href: string; icon: any; title: string; description: string } }) {
