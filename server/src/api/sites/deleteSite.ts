@@ -22,7 +22,7 @@ export async function deleteSite(request: FastifyRequest<{ Params: { id: string 
   // Delete the site from the sites table (related records will cascade delete automatically)
   await db.delete(sites).where(eq(sites.siteId, Number(id)));
 
-  await siteConfig.removeSite(Number(id));
+  siteConfig.removeSite(Number(id));
 
   return reply.status(200).send({ success: true });
 }
