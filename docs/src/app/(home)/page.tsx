@@ -15,6 +15,7 @@ import { RealTimeAnalytics } from "../../components/Cards/RealTimeAnalytics";
 import { SessionReplay } from "../../components/Cards/SessionReplay";
 import { UserSessions } from "../../components/Cards/UserSessions";
 import { DEFAULT_EVENT_LIMIT } from "../../lib/const";
+import { SpinningGlobe } from "@/components/SpinningGlobe";
 
 const tilt_wrap = Tilt_Warp({
   subsets: ["latin"],
@@ -25,14 +26,14 @@ const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    // {
-    //   "@type": "Question",
-    //   name: "Is Rybbit GDPR and CCPA compliant?",
-    //   acceptedAnswer: {
-    //     "@type": "Answer",
-    //     text: "Yes, Rybbit is fully compliant with GDPR, CCPA, and other privacy regulations. We don't use cookies or collect any personal data that could identify your users. We salt user IDs daily to ensure users are not fingerprinted. You will not need to display a cookie consent banner to your users.",
-    //   },
-    // },
+    {
+      "@type": "Question",
+      name: "Is Rybbit GDPR and CCPA compliant?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, Rybbit is fully compliant with GDPR, CCPA, and other privacy regulations. We don't use cookies or collect any personal data that could identify your users. We salt user IDs daily to ensure users are not fingerprinted. You will not need to display a cookie consent banner to your users.",
+      },
+    },
     {
       "@type": "Question",
       name: "How does Rybbit compare to Google Analytics?",
@@ -329,6 +330,7 @@ export default function HomePage() {
           </div>
           {/* </div> */}
         </section>
+
         <section className="py-14 md:py-20 w-full max-w-6xl px-4">
           <div className="text-center mb-10 md:mb-16">
             <SectionBadge className="mb-4"> Analytics Reimagined</SectionBadge>
@@ -342,6 +344,21 @@ export default function HomePage() {
             <SessionReplay />
             <UserSessions />
             <Funnels />
+          </div>
+        </section>
+
+        {/* Real-Time Globe Section */}
+        <section className="py-14 md:py-20 w-full max-w-6xl">
+          <div className="text-center mb-10 md:mb-16 px-4">
+            <SectionBadge className="mb-4">Real-Time Insights</SectionBadge>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight">See Your Users Around the World</h2>
+            <p className="mt-4 text-base md:text-xl text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto font-light">
+              Watch real-time visitor activity across the globe. Every dot represents a real user exploring your site
+              right now.
+            </p>
+          </div>
+          <div className="relative h-[420px] md:h-[700px] max-w-[100vw] mx-auto rounded-2xl">
+            <SpinningGlobe />
           </div>
         </section>
 
@@ -384,7 +401,7 @@ export default function HomePage() {
 
             <div className="bg-neutral-100/50 dark:bg-neutral-800/20 backdrop-blur-sm border border-neutral-300/50 dark:border-neutral-800/50 rounded-xl overflow-hidden">
               <Accordion type="single" collapsible className="w-full">
-                {/* <AccordionItem value="item-1" className="border-b border-neutral-800/50">
+                <AccordionItem value="item-1" className="border-b border-neutral-800/50">
                   <AccordionTrigger className="px-6 py-4 text-base md:text-lg font-medium hover:text-emerald-400 transition-colors">
                     Is Rybbit GDPR and CCPA compliant?
                   </AccordionTrigger>
@@ -394,7 +411,7 @@ export default function HomePage() {
                     ensure users are not fingerprinted. You will not need to display a cookie consent banner to your
                     users.
                   </AccordionContent>
-                </AccordionItem> */}
+                </AccordionItem>
 
                 <AccordionItem value="item-2" className="border-b border-neutral-300/50 dark:border-neutral-800/50">
                   <AccordionTrigger className="px-6 py-4 text-base md:text-lg font-medium hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors">
@@ -549,11 +566,6 @@ export default function HomePage() {
                 >
                   Get started
                 </TrackedButton>
-                {/* <Link href="https://docs.tomato.gg" className="w-full sm:w-auto">
-                  <button className="w-full sm:w-auto bg-neutral-800 hover:bg-neutral-700 text-white font-medium px-6 md:px-8 py-3 md:py-4 rounded-lg border border-neutral-600 transform hover:-translate-y-0.5 transition-all duration-200 hover:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-opacity-50">
-                    View Documentation
-                  </button>
-                </Link> */}
               </div>
 
               <p className="text-neutral-500 dark:text-neutral-400 text-xs md:text-sm flex items-center justify-center gap-2">
