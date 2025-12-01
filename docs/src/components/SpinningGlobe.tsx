@@ -640,6 +640,8 @@ export function SpinningGlobe() {
       doubleClickZoom: false,
       touchZoomRotate: false,
       boxZoom: false,
+      dragPan: !isMobile,
+      dragRotate: !isMobile,
     });
 
     mapRef.current = map;
