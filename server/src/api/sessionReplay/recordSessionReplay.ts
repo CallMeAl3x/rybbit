@@ -24,7 +24,6 @@ const recordSessionReplaySchema = z.object({
       language: z.string().optional(),
     })
     .optional(),
-  apiKey: z.string().max(67).optional(), // rb_ prefix + 64 hex chars
 });
 
 export async function recordSessionReplay(
