@@ -1,17 +1,17 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn, formatSecondsAsMinutesAndSeconds } from "@/lib/utils";
 import NumberFlow from "@number-flow/react";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { useGetOverview } from "../../../../../api/analytics/hooks/useGetOverview";
 import { useGetOverviewBucketed } from "../../../../../api/analytics/hooks/useGetOverviewBucketed";
 import { StatType, useStore } from "../../../../../lib/store";
 import { SparklinesChart } from "./SparklinesChart";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-const ChangePercentage = ({
+export const ChangePercentage = ({
   current,
   previous,
   reverseColor,
@@ -36,11 +36,11 @@ const ChangePercentage = ({
   return (
     <div
       className={cn(
-        "text-xs flex items-center gap-1",
+        "text-xs flex items-center gap-0.5",
         (reverseColor ? -change : change) > 0 ? "text-green-400" : "text-red-400"
       )}
     >
-      {change > 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+      {change > 0 ? <ArrowUp className="w-3 h-3" strokeWidth={3} /> : <ArrowDown className="w-3 h-3" strokeWidth={3} />}
       {Math.abs(change).toFixed(1)}%
     </div>
   );

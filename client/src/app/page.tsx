@@ -1,10 +1,11 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { useUserOrganizations } from "../api/admin/organizations";
 import { useGetSitesFromOrg } from "../api/admin/sites";
 import { CreateOrganizationDialog } from "../components/CreateOrganizationDialog";
+import { DateSelector } from "../components/DateSelector/DateSelector";
 import { NoOrganization } from "../components/NoOrganization";
 import { OrganizationSelector } from "../components/OrganizationSelector";
 import { SiteCard } from "../components/SiteCard";
@@ -13,11 +14,13 @@ import { Button } from "../components/ui/button";
 import { Card, CardDescription, CardTitle } from "../components/ui/card";
 import { useSetPageTitle } from "../hooks/useSetPageTitle";
 import { authClient } from "../lib/auth";
+import { canGoForward, goBack, goForward, useStore } from "../lib/store";
 import { AddSite } from "./components/AddSite";
 
 export default function Home() {
   useSetPageTitle("Rybbit · Home");
 
+  const { time, setTime } = useStore();
   const { data: activeOrganization, isPending } = authClient.useActiveOrganization();
 
   const { data: sites, refetch: refetchSites, isLoading: isLoadingSites } = useGetSitesFromOrg(activeOrganization?.id);
@@ -59,22 +62,37 @@ export default function Home() {
         <div>
           <OrganizationSelector />
         </div>
-        {/* <div className="text-2xl font-bold">{sites?.length} Websites</div> */}
-        <AddSite disabled={!canAddSites} />
+        <div className="flex items-center gap-2">
+          <DateSelector time={time} setTime={setTime} />
+          <div className="flex items-center">
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={goBack}
+              disabled={time.mode === "past-minutes"}
+              className="rounded-r-none h-8 w-8"
+            >
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={goForward}
+              disabled={!canGoForward(time)}
+              className="rounded-l-none -ml-px h-8 w-8"
+            >
+              <ChevronRight />
+            </Button>
+          </div>
+        </div>
       </div>
-      {/* Organization required message */}
       {hasNoOrganizations && <NoOrganization />}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Sites list */}
-
+      <div className="flex flex-col gap-4">
         {sites?.sites?.map(site => {
           return <SiteCard key={site.siteId} siteId={site.siteId} domain={site.domain} />;
         })}
-
-        {/* No websites message */}
-        {hasNoSites && (
-          <Card className="col-span-full p-6 flex flex-col items-center text-center">
+        {hasNoSites ? (
+          <Card className="p-6 flex flex-col items-center text-center">
             <CardTitle className="mb-2 text-xl">No websites yet</CardTitle>
             <CardDescription className="mb-4">Add your first website to start tracking analytics</CardDescription>
             <AddSite
@@ -86,9 +104,12 @@ export default function Home() {
               }
             />
           </Card>
+        ) : (
+          <div className="flex justify-center">
+            <AddSite disabled={!canAddSites} />
+          </div>
         )}
       </div>
-
       <CreateOrganizationDialog
         open={createOrgDialogOpen}
         onOpenChange={setCreateOrgDialogOpen}

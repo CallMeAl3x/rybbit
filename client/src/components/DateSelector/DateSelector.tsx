@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getTimezoneLabel, timezones } from "@/lib/dateTimeUtils";
-import { getTimezone, getTodayInTimezone, useStore } from "@/lib/store";
+import { getTimezone, useStore } from "@/lib/store";
 import { Calendar, Check, Globe } from "lucide-react";
 import { DateTime } from "luxon";
 import { CustomDateRangePicker } from "./CustomDateRangePicker";
