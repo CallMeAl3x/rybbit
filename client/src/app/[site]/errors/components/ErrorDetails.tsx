@@ -1,24 +1,24 @@
 "use client";
 
-import { useGetErrorEventsInfinite } from "@/api/analytics/hooks/errors/useGetErrorEvents";
 import { ErrorEvent } from "@/api/analytics/endpoints";
+import { useGetErrorEventsInfinite } from "@/api/analytics/hooks/errors/useGetErrorEvents";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { userLocale } from "@/lib/dateTimeUtils";
-import { getTimezone } from "@/lib/store";
 import { useGetRegionName } from "@/lib/geo";
-import { getCountryName } from "@/lib/utils";
+import { getTimezone } from "@/lib/store";
+import { getCountryName, truncateString } from "@/lib/utils";
 import { AlertTriangle, Code, Hash, Laptop, Loader2, Smartphone, TriangleAlert, User } from "lucide-react";
 import { DateTime } from "luxon";
 import Link from "next/link";
-import { memo, useMemo } from "react";
+import { useParams } from "next/navigation";
+import { useMemo } from "react";
+import { ErrorState } from "../../../../components/ErrorState";
 import { Browser } from "../../components/shared/icons/Browser";
 import { CountryFlag } from "../../components/shared/icons/CountryFlag";
 import { OperatingSystem } from "../../components/shared/icons/OperatingSystem";
-import { useParams } from "next/navigation";
-import { ErrorState } from "../../../../components/ErrorState";
 
 interface ErrorDetailsProps {
   errorMessage: string;
@@ -33,13 +33,6 @@ function DeviceIcon({ deviceType }: { deviceType: string | null }) {
     return <Smartphone className="w-4 h-4" />;
   }
   return <Laptop className="w-4 h-4" />;
-}
-
-// Function to truncate text for display
-function truncateText(text: string | null, maxLength: number = 50) {
-  if (!text) return "-";
-  if (text.length <= maxLength) return text;
-  return `${text.substring(0, maxLength)}...`;
 }
 
 // Component to display individual error event
@@ -189,7 +182,7 @@ function ErrorEventItem({ errorEvent }: { errorEvent: ErrorEvent }) {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {errorEvent.fileName && <span>{truncateText(errorEvent.fileName, 100)}</span>}
+                      {errorEvent.fileName && <span>{truncateString(errorEvent.fileName, 100)}</span>}
                       {errorEvent.lineNumber && (
                         <span className="text-neutral-900 dark:text-neutral-100">
                           :{errorEvent.lineNumber}

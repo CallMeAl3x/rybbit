@@ -3,17 +3,17 @@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getTimezone } from "@/lib/store";
-import { ExternalLink, Eye, Laptop, MousePointerClick, Smartphone } from "lucide-react";
+import { ExternalLink, Laptop, Smartphone } from "lucide-react";
 import { DateTime } from "luxon";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { memo } from "react";
 import { Event } from "../../../../api/analytics/endpoints";
-import { getCountryName } from "../../../../lib/utils";
+import { EventIcon, PageviewIcon } from "../../../../components/EventIcons";
+import { getCountryName, truncateString } from "../../../../lib/utils";
 import { Browser } from "../../components/shared/icons/Browser";
 import { CountryFlag } from "../../components/shared/icons/CountryFlag";
 import { OperatingSystem } from "../../components/shared/icons/OperatingSystem";
-import { EventIcon, PageviewIcon } from "../../../../components/EventIcons";
 
 // DeviceIcon component for displaying mobile/desktop icons
 function DeviceIcon({ deviceType }: { deviceType: string }) {
@@ -24,15 +24,6 @@ function DeviceIcon({ deviceType }: { deviceType: string }) {
   }
 
   return <Laptop className="w-4 h-4" />;
-}
-
-// Function to truncate path for display
-function truncatePath(path: string, maxLength: number = 64) {
-  if (!path) return "-";
-  if (path.length <= maxLength) return path;
-
-  // Keep the beginning of the path with ellipsis
-  return `${path.substring(0, maxLength)}...`;
 }
 
 interface EventLogItemProps {
@@ -86,7 +77,7 @@ export function EventLogItem({ event }: EventLogItemProps) {
               {isPageview ? (
                 <Link href={fullPath} target="_blank" rel="noopener noreferrer">
                   <div className="text-sm truncate hover:underline" title={event.pathname}>
-                    {truncatePath(`${event.pathname}${event.querystring ? `${event.querystring}` : ""}`)}
+                    {truncateString(`${event.pathname}${event.querystring ? `${event.querystring}` : ""}`, 64)}
                   </div>
                 </Link>
               ) : isOutbound ? (
@@ -94,7 +85,7 @@ export function EventLogItem({ event }: EventLogItemProps) {
                 eventProperties.url ? (
                   <Link href={eventProperties.url} target="_blank" rel="noopener noreferrer">
                     <div className="text-sm truncate hover:underline text-purple-400" title={eventProperties.url}>
-                      {truncatePath(eventProperties.url)}
+                      {truncateString(eventProperties.url, 64)}
                     </div>
                   </Link>
                 ) : (

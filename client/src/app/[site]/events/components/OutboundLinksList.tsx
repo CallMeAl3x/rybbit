@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 import { memo } from "react";
 import { OutboundLink } from "../../../../api/analytics/endpoints";
 import { Favicon } from "../../../../components/Favicon";
-import { cn } from "../../../../lib/utils";
+import { cn, truncateUrl } from "../../../../lib/utils";
 import { ScrollArea } from "../../../../components/ui/scroll-area";
 
 // Skeleton component for OutboundLinksList
@@ -68,33 +68,6 @@ interface OutboundLinksListProps {
   outboundLinks: OutboundLink[];
   isLoading: boolean;
   size?: "small" | "large";
-}
-
-// Function to truncate URL for display
-function truncateUrl(url: string, maxLength: number = 60) {
-  if (!url) return "-";
-  if (url.length <= maxLength) return url;
-
-  try {
-    const urlObj = new URL(url);
-    const domain = urlObj.hostname;
-    const path = urlObj.pathname + urlObj.search;
-
-    if (domain.length + path.length <= maxLength) {
-      return `${domain}${path}`;
-    }
-
-    // If still too long, truncate the path
-    const availableSpace = maxLength - domain.length - 3; // 3 for "..."
-    if (availableSpace > 0) {
-      return `${domain}${path.substring(0, availableSpace)}...`;
-    } else {
-      return `${domain.substring(0, maxLength - 3)}...`;
-    }
-  } catch (e) {
-    // If URL parsing fails, just truncate the string
-    return `${url.substring(0, maxLength - 3)}...`;
-  }
 }
 
 export function OutboundLinksList({ outboundLinks, isLoading, size = "small" }: OutboundLinksListProps) {

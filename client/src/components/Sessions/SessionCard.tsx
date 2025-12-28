@@ -6,7 +6,7 @@ import { DateTime } from "luxon";
 import { memo, useState } from "react";
 import { GetSessionsResponse } from "../../api/analytics/endpoints";
 import { formatShortDuration, hour12, userLocale } from "../../lib/dateTimeUtils";
-import { cn, formatter, getUserDisplayName } from "../../lib/utils";
+import { cn, formatter, getUserDisplayName, truncateString } from "../../lib/utils";
 import { Avatar } from "../Avatar";
 import { Channel } from "../Channel";
 import { EventIcon, PageviewIcon } from "../EventIcons";
@@ -26,15 +26,6 @@ interface SessionCardProps {
   userId?: string;
   onClick?: () => void;
   expandedByDefault?: boolean;
-}
-
-// Function to truncate path for display
-function truncatePath(path: string, maxLength: number = 32) {
-  if (!path) return "-";
-  if (path.length <= maxLength) return path;
-
-  // Keep the beginning of the path with ellipsis
-  return `${path.substring(0, maxLength)}...`;
 }
 
 export function SessionCard({ session, onClick, userId, expandedByDefault }: SessionCardProps) {
@@ -130,7 +121,7 @@ export function SessionCard({ session, onClick, userId, expandedByDefault }: Ses
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate max-w-[200px] inline-block">
-                  {truncatePath(session.entry_page)}
+                  {truncateString(session.entry_page, 32)}
                 </span>
               </TooltipTrigger>
               <TooltipContent>
@@ -143,7 +134,7 @@ export function SessionCard({ session, onClick, userId, expandedByDefault }: Ses
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate max-w-[200px] inline-block">
-                  {truncatePath(session.exit_page)}
+                  {truncateString(session.exit_page, 32)}
                 </span>
               </TooltipTrigger>
               <TooltipContent>
