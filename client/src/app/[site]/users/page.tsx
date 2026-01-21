@@ -28,6 +28,7 @@ import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 import { Switch } from "../../../components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/ui/tooltip";
+import { Info } from "lucide-react";
 import { useSetPageTitle } from "../../../hooks/useSetPageTitle";
 import { USER_PAGE_FILTERS } from "../../../lib/filterGroups";
 import { getCountryName, getUserDisplayName } from "../../../lib/utils";
@@ -301,6 +302,16 @@ export default function UsersPage() {
           <Label htmlFor="identified-only" className="text-sm text-neutral-600 dark:text-neutral-400 cursor-pointer">
             Identified only
           </Label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href="https://www.rybbit.io/docs/identify-users" target="_blank">
+                <Info className="h-4 w-4 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 cursor-pointer" />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Learn how to identify users</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
         <div className="rounded-md border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900">
           <div className="relative overflow-x-auto">
