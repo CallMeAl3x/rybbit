@@ -91,7 +91,7 @@ export default function Home() {
         </div>
       </div>
       {hasNoOrganizations && <NoOrganization />}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         {sites?.sites?.map(site => {
           return <SiteCard key={site.siteId} siteId={site.siteId} domain={site.domain} />;
         })}

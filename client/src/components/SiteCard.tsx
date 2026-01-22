@@ -1,3 +1,4 @@
+import { Settings } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 import { useGetOverview } from "../api/analytics/hooks/useGetOverview";
@@ -8,6 +9,7 @@ import { useStore } from "../lib/store";
 import { formatter } from "../lib/utils";
 import { Favicon } from "./Favicon";
 import { SiteSessionChart } from "./SiteSessionChart";
+import { SiteSettings } from "./SiteSettings/SiteSettings";
 import { Skeleton } from "./ui/skeleton";
 
 interface SiteCardProps {
@@ -64,7 +66,7 @@ export function SiteCard({ siteId, domain }: SiteCardProps) {
     <Link href={`/${siteId}`}>
       <div
         ref={ref}
-        className="flex flex-col md:flex-row md:justify-between gap-3 rounded-lg bg-white dark:bg-neutral-900/70 px-4 py-3 border border-neutral-100 dark:border-neutral-850 transition-all duration-300 hover:translate-y-[-2px] w-full"
+        className="flex flex-col md:flex-row md:justify-between gap-3 rounded-lg bg-white dark:bg-neutral-900/70 px-3 py-2 border border-neutral-100 dark:border-neutral-850 transition-all duration-300 hover:translate-y-[-2px] w-full"
       >
         {showSkeleton ? (
           <>
@@ -91,6 +93,16 @@ export function SiteCard({ siteId, domain }: SiteCardProps) {
             <div className="flex gap-2 items-center">
               <Favicon domain={domain} className="w-6 h-6" />
               <span className="text-lg font-medium truncate group-hover:underline transition-all">{domain}</span>
+              <div onClick={(e) => e.preventDefault()}>
+                <SiteSettings
+                  siteId={siteId}
+                  trigger={
+                    <button className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
+                      <Settings className="h-4 w-4 text-neutral-500" />
+                    </button>
+                  }
+                />
+              </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-center justify-between">
               <div className="relative rounded-md w-[200px] h-[50px]">
