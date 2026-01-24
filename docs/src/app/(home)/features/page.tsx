@@ -1,3 +1,4 @@
+import { CTASection } from "@/components/CTASection";
 import { SectionBadge } from "@/components/SectionBadge";
 import { TrackedButton } from "@/components/TrackedButton";
 import { DEFAULT_EVENT_LIMIT } from "@/lib/const";
@@ -5,13 +6,11 @@ import {
   Activity,
   AlertTriangle,
   ArrowLeftRight,
-  ArrowRight,
   Bot,
   CheckCircle,
   Clock,
   Cookie,
   Database,
-  Download,
   Eye,
   Funnel,
   Gauge,
@@ -36,7 +35,6 @@ import {
   Tag,
   Target,
   TrendingUp,
-  Upload,
   UserCheck,
   UserCog,
   Users,
@@ -45,7 +43,6 @@ import {
   Zap,
 } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Features - Rybbit Analytics",
@@ -386,139 +383,11 @@ export default function FeaturesPage() {
         features={cloudFeatures}
       />
 
-      {/* Why Choose Rybbit Section */}
-      <section className="py-14 md:py-20 w-full bg-neutral-100/30 dark:bg-neutral-900/50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">Why choose Rybbit?</h2>
-            <p className="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto font-light">
-              Built for teams who value privacy, simplicity, and powerful insights
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-emerald-500/20 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <Clock className="w-6 h-6" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Set up in minutes</h3>
-                <p className="text-neutral-600 dark:text-neutral-300 text-sm">
-                  Add a simple script tag or install our npm package and start tracking immediately. No complex
-                  configuration required.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-emerald-500/20 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <Shield className="w-6 h-6" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Privacy-focused</h3>
-                <p className="text-neutral-600 dark:text-neutral-300 text-sm">
-                  Cookieless tracking that&apos;s GDPR and CCPA compliant by default. No cookie banners needed, your
-                  users&apos; privacy protected.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-emerald-500/20 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <Zap className="w-6 h-6" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Lightning fast</h3>
-                <p className="text-neutral-600 dark:text-neutral-300 text-sm">
-                  Our tracking script is less than 2KB and doesn&apos;t slow down your site. Dashboard loads instantly
-                  with real-time updates.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-emerald-500/20 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <Eye className="w-6 h-6" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Crystal clear insights</h3>
-                <p className="text-neutral-600 dark:text-neutral-300 text-sm">
-                  No confusing metrics or overwhelming dashboards. See exactly what matters with clean, intuitive
-                  visualizations.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-emerald-500/20 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <TrendingUp className="w-6 h-6" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Grow with confidence</h3>
-                <p className="text-neutral-600 dark:text-neutral-300 text-sm">
-                  From startups to enterprises, our infrastructure scales with you. Start free and upgrade only when you
-                  need to.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-emerald-500/20 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <Globe className="w-6 h-6" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Open source</h3>
-                <p className="text-neutral-600 dark:text-neutral-300 text-sm">
-                  100% open source under AGPL v3.0. Self-host on your infrastructure or use our cloud service. Your
-                  choice, your data.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 md:py-24 w-full bg-gradient-to-b from-neutral-100 to-neutral-200 dark:from-neutral-900 dark:to-neutral-950">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">Ready to get started?</h2>
-          <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 mb-10 font-light">
-            Join thousands of companies using Rybbit to understand their audience
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-base md:text-lg">
-            <TrackedButton
-              href="https://app.rybbit.io/signup"
-              eventName="signup"
-              eventProps={{ location: "features_bottom_cta", button_text: "Start tracking for free" }}
-              className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-8 py-4 rounded-lg shadow-lg shadow-emerald-900/20 transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50 cursor-pointer"
-            >
-              Start tracking for free
-            </TrackedButton>
-            <Link href="/pricing" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white font-medium px-8 py-4 rounded-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-opacity-50 flex items-center justify-center gap-2">
-                View pricing
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </Link>
-          </div>
-          <p className="text-neutral-500 dark:text-neutral-400 text-sm flex items-center justify-center gap-2 mt-8">
-            <CheckCircle className="w-4 h-4" />
-            No credit card required • Cancel anytime • {DEFAULT_EVENT_LIMIT.toLocaleString()} pageviews/month free
-          </p>
-        </div>
-      </section>
+      <CTASection
+        title="Ready to get started?"
+        description="Join thousands of companies using Rybbit to understand their audience"
+        eventLocation="features_bottom_cta"
+      />
     </div>
   );
 }

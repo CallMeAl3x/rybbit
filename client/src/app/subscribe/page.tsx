@@ -7,7 +7,6 @@ import { Suspense } from "react";
 import { StandardPage } from "../../components/StandardPage";
 import { UsageChart } from "../../components/UsageChart";
 import { useStripeSubscription } from "../../lib/subscription/useStripeSubscription";
-import { FAQSection } from "./components/FAQSection";
 import { PricingCard } from "./components/PricingCard";
 import { PricingHeader } from "./components/PricingHeader";
 import { useQueryState } from "nuqs";
@@ -59,11 +58,6 @@ function SubscribeContent() {
             <UsageChart organizationId={organizationId} startDate={startDate} endDate={endDate} />
           </div>
         )}
-
-        {/* FAQ Section */}
-        <div className="max-w-lg mx-auto">
-          <FAQSection />
-        </div>
       </div>
     </StandardPage>
   );

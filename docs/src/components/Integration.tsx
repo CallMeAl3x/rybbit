@@ -58,7 +58,7 @@ export function Integrations() {
 
   return (
     <div className="py-20 w-full">
-      <div className="max-w-7xl mx-auto px-4 mb-10 text-center">
+      <div className="max-w-[1300px] mx-auto px-4 mb-10 text-center">
         <SectionBadge className="mb-4">
           Seamless Integration
         </SectionBadge>
