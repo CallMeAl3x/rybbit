@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUserOrganizations } from "../api/admin/hooks/useOrganizations";
 import { useGetSitesFromOrg } from "../api/admin/hooks/useSites";
@@ -12,6 +12,7 @@ import { SiteCard } from "../components/SiteCard";
 import { StandardPage } from "../components/StandardPage";
 import { Button } from "../components/ui/button";
 import { Card, CardDescription, CardTitle } from "../components/ui/card";
+import { Input } from "../components/ui/input";
 import { useSetPageTitle } from "../hooks/useSetPageTitle";
 import { authClient } from "../lib/auth";
 import { canGoForward, goBack, goForward, useStore } from "../lib/store";
@@ -49,10 +50,16 @@ export default function Home() {
   const hasNoSites = shouldShowSites && (!sites?.sites || sites.sites.length === 0);
 
   const [createOrgDialogOpen, setCreateOrgDialogOpen] = useState(false);
+  const [domainFilter, setDomainFilter] = useState("");
 
   // Track hydration to avoid mismatch with date-dependent disabled states
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => setIsMounted(true), []);
+
+  // Filter sites by domain
+  const filteredSites = sites?.sites?.filter(site =>
+    site.domain.toLowerCase().includes(domainFilter.toLowerCase())
+  );
 
   // Handle successful organization creation
   const handleOrganizationCreated = () => {
@@ -91,8 +98,19 @@ export default function Home() {
         </div>
       </div>
       {hasNoOrganizations && <NoOrganization />}
+      {shouldShowSites && sites?.sites && sites.sites.length > 0 && (
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+          <Input
+            placeholder="Filter by domain..."
+            value={domainFilter}
+            onChange={e => setDomainFilter(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+      )}
       <div className="flex flex-col gap-2">
-        {sites?.sites?.map(site => {
+        {filteredSites?.map(site => {
           return <SiteCard key={site.siteId} siteId={site.siteId} domain={site.domain} />;
         })}
         {hasNoSites ? (
