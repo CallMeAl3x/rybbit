@@ -7,7 +7,7 @@ import { Badge } from "../../../../components/ui/badge";
 import { authClient } from "../../../../lib/auth";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { useOrganizationMembers } from "../../../../api/admin/hooks/useOrganizationMembers";
 import { useOrganizationInvitations } from "../../../../api/admin/hooks/useOrganizations";
 import { NoOrganization } from "../../../../components/NoOrganization";

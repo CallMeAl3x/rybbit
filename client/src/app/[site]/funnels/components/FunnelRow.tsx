@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ArrowRight, ChevronDown, ChevronUp, Copy, Edit, Eye, MousePointerClick, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { useDeleteFunnel } from "../../../../api/analytics/hooks/funnels/useDeleteFunnel";
 import { useGetFunnel } from "../../../../api/analytics/hooks/funnels/useGetFunnel";
 import { SavedFunnel } from "../../../../api/analytics/endpoints";

@@ -13,7 +13,7 @@ import {
 import { authClient } from "@/lib/auth";
 import { UserMinus } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { Member } from "../page";
 
 interface RemoveMemberDialogProps {

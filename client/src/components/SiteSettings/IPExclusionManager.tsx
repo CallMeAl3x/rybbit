@@ -2,7 +2,7 @@
 
 import { Minus, Plus } from "lucide-react";
 import React, { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

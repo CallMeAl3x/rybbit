@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UserPlus } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { Alert } from "../../../../../components/ui/alert";
 import { authClient } from "../../../../../lib/auth";
 import { validateEmail } from "../../../../../lib/auth-utils";

@@ -5,7 +5,7 @@ import { authClient } from "@/lib/auth";
 import { BACKEND_URL } from "@/lib/const";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { DEFAULT_EVENT_LIMIT } from "../../../lib/subscription/constants";
 import { trackAdEvent } from "../../../lib/trackAdEvent";
 import { FeaturesList } from "./FeaturesList";

@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { CheckCircle2, KeyRound, ShieldAlert, ShieldCheck, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { Button } from "../../../../components/ui/button";
 import {
   Dialog,

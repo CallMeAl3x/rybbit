@@ -3,7 +3,7 @@
 import { AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useCallback, ReactNode } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 
 import {
   AlertDialog,

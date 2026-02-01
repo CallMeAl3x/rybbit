@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { SiGoogle } from "@icons-pack/react-simple-icons";
 import { ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { useQueryState, parseAsString } from "nuqs";
 
 interface GSCManagerProps {

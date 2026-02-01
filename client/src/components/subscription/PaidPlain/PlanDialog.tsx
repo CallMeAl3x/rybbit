@@ -6,7 +6,7 @@ import { usePreviewSubscriptionUpdate, useUpdateSubscription } from "@/lib/subsc
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { Badge } from "../../ui/badge";
 import { PlanChangePreviewDialog } from "./PlanChangePreviewDialog";
 

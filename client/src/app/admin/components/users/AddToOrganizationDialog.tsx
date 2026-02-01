@@ -15,7 +15,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { Alert } from "@/components/ui/alert";
 import { useAddUserToOrganization } from "@/api/admin/hooks/useOrganizations";
 import { useAdminOrganizations } from "@/api/admin/hooks/useAdminOrganizations";

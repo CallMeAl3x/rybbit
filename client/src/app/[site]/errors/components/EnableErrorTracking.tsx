@@ -2,7 +2,7 @@
 
 import { AlertTriangle } from "lucide-react";
 import { useParams } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { updateSiteConfig } from "../../../../api/admin/endpoints";
 import { useGetSite } from "../../../../api/admin/hooks/useSites";
 import { Alert, AlertDescription, AlertTitle } from "../../../../components/ui/alert";

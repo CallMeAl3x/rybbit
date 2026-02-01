@@ -40,7 +40,7 @@ import { parseUtcTimestamp } from "../../../../lib/dateTimeUtils";
 import { AddToOrganizationDialog } from "./AddToOrganizationDialog";
 import { useRemoveUserFromOrganization } from "@/api/admin/hooks/useOrganizations";
 import { useAdminOrganizations } from "@/api/admin/hooks/useAdminOrganizations";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { Label } from "@/components/ui/label";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
