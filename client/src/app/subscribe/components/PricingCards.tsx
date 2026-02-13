@@ -75,7 +75,9 @@ export function PricingCards({ isLoggedIn }: { isLoggedIn: boolean }) {
     try {
       // Use NEXT_PUBLIC_BACKEND_URL if available, otherwise use relative path for same-origin requests
       const baseUrl = window.location.origin;
-      const successUrl = `${baseUrl}/settings/organization/subscription?session_id={CHECKOUT_SESSION_ID}`;
+      const successUrl = siteId
+        ? `${baseUrl}/${siteId}?session_id={CHECKOUT_SESSION_ID}`
+        : `${baseUrl}/settings/organization/subscription?session_id={CHECKOUT_SESSION_ID}`;
       const cancelUrl = `${baseUrl}/subscribe${siteId ? `?siteId=${siteId}` : ""}`;
 
       const response = await fetch(`${BACKEND_URL}/stripe/create-checkout-session`, {
@@ -124,8 +126,10 @@ export function PricingCards({ isLoggedIn }: { isLoggedIn: boolean }) {
     setIsLoading(true);
     try {
       const baseUrl = window.location.origin;
-      const successUrl = `${baseUrl}/settings/organization/subscription?session_id={CHECKOUT_SESSION_ID}`;
-      const cancelUrl = `${baseUrl}/subscribe`;
+      const successUrl = siteId
+        ? `${baseUrl}/${siteId}?session_id={CHECKOUT_SESSION_ID}`
+        : `${baseUrl}/settings/organization/subscription?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${baseUrl}/subscribe${siteId ? `?siteId=${siteId}` : ""}`;
 
       const response = await fetch(`${BACKEND_URL}/stripe/create-checkout-session`, {
         method: "POST",
