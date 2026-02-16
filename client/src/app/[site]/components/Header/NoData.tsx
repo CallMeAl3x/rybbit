@@ -39,6 +39,7 @@ import { CodeSnippet } from "../../../../components/CodeSnippet";
 import { Alert } from "../../../../components/ui/alert";
 import { VerifyInstallation } from "../../../../components/VerifyInstallation";
 import { useStore } from "../../../../lib/store";
+import { BACKEND_URL } from "../../../../lib/const";
 
 // Custom Card Component
 interface CardProps {
@@ -87,7 +88,7 @@ export function NoData() {
             <div className="text-xs text-muted-foreground">Place this snippet in the &lt;head&gt; of your website:</div>
             <CodeSnippet
               language="HTML"
-              code={`<script\n    src="${globalThis.location.origin}/api/script.js"\n    data-site-id="${siteMetadata?.id ?? siteMetadata?.siteId}"\n    defer\n></script>`}
+              code={`<script\n    src="${BACKEND_URL.replace('/api', '')}/api/script.js"\n    data-site-id="${siteMetadata?.id ?? siteMetadata?.siteId}"\n    defer\n></script>`}
               className="text-xs"
             />
             <span className="text-xs text-muted-foreground">
