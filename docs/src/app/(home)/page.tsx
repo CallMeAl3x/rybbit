@@ -93,11 +93,19 @@ const faqSchema = {
   ],
 };
 
-export const metadata = {
+import { createMetadata, createOGImageUrl } from "@/lib/metadata";
+
+export const metadata = createMetadata({
   title: "Rybbit - Cookieless Google Analytics Replacement",
   description:
     "Next-gen, open source, lightweight, cookieless web & product analytics for everyone — GDPR/CCPA compliant.",
-};
+  openGraph: {
+    images: [createOGImageUrl("Rybbit - Cookieless Google Analytics Replacement", "Next-gen, open source, lightweight, cookieless web & product analytics for everyone — GDPR/CCPA compliant.")],
+  },
+  twitter: {
+    images: [createOGImageUrl("Rybbit - Cookieless Google Analytics Replacement", "Next-gen, open source, lightweight, cookieless web & product analytics for everyone — GDPR/CCPA compliant.")],
+  },
+});
 
 const features = [
   {

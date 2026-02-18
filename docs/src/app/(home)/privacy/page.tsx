@@ -1,7 +1,15 @@
-export const metadata = {
+import { createMetadata, createOGImageUrl } from "@/lib/metadata";
+
+export const metadata = createMetadata({
   title: "Privacy Policy",
   description: "Rybbit privacy policy - how we protect your data",
-};
+  openGraph: {
+    images: [createOGImageUrl("Privacy Policy", "Rybbit privacy policy - how we protect your data")],
+  },
+  twitter: {
+    images: [createOGImageUrl("Privacy Policy", "Rybbit privacy policy - how we protect your data")],
+  },
+});
 
 export default function PrivacyPolicy() {
   return (

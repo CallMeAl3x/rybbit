@@ -1,7 +1,15 @@
-export const metadata = {
+import { createMetadata, createOGImageUrl } from "@/lib/metadata";
+
+export const metadata = createMetadata({
   title: "Terms and Conditions",
   description: "Rybbit terms and conditions of service",
-};
+  openGraph: {
+    images: [createOGImageUrl("Terms and Conditions", "Rybbit terms and conditions of service")],
+  },
+  twitter: {
+    images: [createOGImageUrl("Terms and Conditions", "Rybbit terms and conditions of service")],
+  },
+});
 
 export default function TermsAndConditions() {
   return (

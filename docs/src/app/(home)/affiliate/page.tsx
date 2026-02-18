@@ -4,6 +4,7 @@ import { Tilt_Warp } from "next/font/google";
 import { TrackedButton } from "../../../components/TrackedButton";
 import { cn } from "../../../lib/utils";
 import type { Metadata } from "next";
+import { createOGImageUrl } from "@/lib/metadata";
 
 const tilt_wrap = Tilt_Warp({
   subsets: ["latin"],
@@ -20,6 +21,13 @@ export const metadata: Metadata = {
       "Earn 50% recurring commission for 12 months by referring customers to Rybbit.",
     type: "website",
     url: "https://rybbit.com/affiliate",
+    images: [createOGImageUrl("Rybbit Affiliate Program", "Earn 50% recurring commission for 12 months by referring customers to Rybbit.")],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rybbit Affiliate Program",
+    description: "Earn 50% recurring commission for 12 months by referring customers to Rybbit.",
+    images: [createOGImageUrl("Rybbit Affiliate Program", "Earn 50% recurring commission for 12 months by referring customers to Rybbit.")],
   },
   alternates: {
     canonical: "https://rybbit.com/affiliate",

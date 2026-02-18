@@ -5,13 +5,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 import { Reorder } from "framer-motion";
 import { ChevronDown, ChevronUp, GripVertical, Plus, Save, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FunnelResponse, FunnelStep } from "../../../../api/analytics/endpoints";
 import { useMetric } from "../../../../api/analytics/hooks/useGetMetric";
 import { ThreeDotLoader } from "../../../../components/Loaders";
 import { Label } from "../../../../components/ui/label";
 import { Switch } from "../../../../components/ui/switch";
 import { Funnel } from "./Funnel";
+
+const URL_PATTERN = /^(https?:\/\/|www\.|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\/)/i;
 
 interface FunnelFormProps {
   name: string;
@@ -79,6 +81,13 @@ export function FunnelForm({
 
   // Unique IDs for each step (needed for drag-and-drop reordering)
   const [stepIds, setStepIds] = useState<string[]>(() => steps.map((_, i) => `step-${Date.now()}-${i}`));
+
+  // Derive which page-type steps have URL values
+  const stepUrlErrors = useMemo(
+    () => steps.map(step => step.type === "page" && URL_PATTERN.test(step.value)),
+    [steps]
+  );
+  const hasUrlErrors = stepUrlErrors.some(Boolean);
 
   // Fetch suggestions for paths, events, and hostnames
   const { data: pathsData } = useMetric({
@@ -270,13 +279,23 @@ export function FunnelForm({
                           <SelectItem value="event">Event</SelectItem>
                         </SelectContent>
                       </Select>
-                      <InputWithSuggestions
-                        suggestions={step.type === "page" ? pathSuggestions : eventSuggestions}
-                        placeholder={step.type === "page" ? "Path (e.g. /pricing)" : "Event name"}
-                        value={step.value}
-                        className="border-neutral-300 dark:border-neutral-700 w-[260px]"
-                        onChange={e => updateStep(index, "value", e.target.value)}
-                      />
+                      <div className="flex flex-col">
+                        <InputWithSuggestions
+                          suggestions={step.type === "page" ? pathSuggestions : eventSuggestions}
+                          placeholder={step.type === "page" ? "Path (e.g. /pricing)" : "Event name"}
+                          value={step.value}
+                          className={cn(
+                            "border-neutral-300 dark:border-neutral-700 w-[260px]",
+                            stepUrlErrors[index] && "border-red-500 dark:border-red-500"
+                          )}
+                          onChange={e => updateStep(index, "value", e.target.value)}
+                        />
+                        {stepUrlErrors[index] && (
+                          <p className="text-xs text-red-500 mt-1">
+                            Enter a path (e.g., /checkout), not a full URL.
+                          </p>
+                        )}
+                      </div>
                       <div className="flex items-center">
                         <Button
                           variant="ghost"
@@ -456,7 +475,7 @@ export function FunnelForm({
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button onClick={onSave} disabled={isSaving} variant="success">
+          <Button onClick={onSave} disabled={isSaving || hasUrlErrors} variant="success">
             <Save className="h-4 w-4" />
             {isSaving ? "Saving..." : saveButtonText}
           </Button>

@@ -1,7 +1,15 @@
-export const metadata = {
+import { createMetadata, createOGImageUrl } from "@/lib/metadata";
+
+export const metadata = createMetadata({
   title: "Data Processing Agreement",
   description: "Rybbit Data Processing Agreement (DPA) - how we process data on your behalf",
-};
+  openGraph: {
+    images: [createOGImageUrl("Data Processing Agreement", "Rybbit Data Processing Agreement (DPA) - how we process data on your behalf")],
+  },
+  twitter: {
+    images: [createOGImageUrl("Data Processing Agreement", "Rybbit Data Processing Agreement (DPA) - how we process data on your behalf")],
+  },
+});
 
 export default function DataProcessingAgreement() {
   return (

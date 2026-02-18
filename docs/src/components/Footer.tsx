@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <Image src="/rybbit1.svg" alt="Rybbit" width={140} height={0} style={{ height: "auto" }}
+            <Image src="/rybbit/horizontal_white.svg" alt="Rybbit" width={140} height={0} style={{ height: "auto" }}
               className="dark:invert-0 invert"
 
             />
@@ -211,6 +211,11 @@ export function Footer() {
               <li>
                 <Link href="/dpa" className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
                   DPA
+                </Link>
+              </li>
+              <li>
+                <Link href="/brand" className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
+                  Brand Kit
                 </Link>
               </li>
               <li>

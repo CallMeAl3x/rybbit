@@ -59,6 +59,19 @@ const formSchema = z
       message: "Configuration is required based on goal type",
       path: ["config"],
     }
+  )
+  .refine(
+    data => {
+      if (data.goalType === "path" && data.config.pathPattern) {
+        return !/^(https?:\/\/|www\.|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\/)/i.test(data.config.pathPattern);
+      }
+      return true;
+    },
+    {
+      message:
+        "Enter a path (e.g., /checkout), not a full URL. The domain is already determined by your site.",
+      path: ["config", "pathPattern"],
+    }
   );
 
 type FormValues = z.infer<typeof formSchema>;

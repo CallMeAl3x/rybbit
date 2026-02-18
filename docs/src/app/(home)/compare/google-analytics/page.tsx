@@ -2,6 +2,7 @@ import { ComparisonPage } from "../components/ComparisonPage";
 import { googleAnalyticsComparisonData } from "./comparison-data";
 import { GoogleAnalyticsComparisonContent } from "./ComparisonContent";
 import type { Metadata } from "next";
+import { createOGImageUrl } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   title: "Rybbit vs Google Analytics: Privacy-First Alternative 2025",
@@ -13,11 +14,13 @@ export const metadata: Metadata = {
       "Why thousands are switching from Google Analytics to Rybbit. Open-source, cookie-free, GDPR compliant.",
     type: "website",
     url: "https://rybbit.com/compare/google-analytics",
+    images: [createOGImageUrl("Rybbit vs Google Analytics: The Privacy-First Alternative", "Why thousands are switching from Google Analytics to Rybbit. Open-source, cookie-free, GDPR compliant.")],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rybbit vs Google Analytics",
     description: "The privacy-first Google Analytics alternative. Compare features side-by-side.",
+    images: [createOGImageUrl("Rybbit vs Google Analytics", "The privacy-first Google Analytics alternative. Compare features side-by-side.")],
   },
   alternates: {
     canonical: "https://rybbit.com/compare/google-analytics",

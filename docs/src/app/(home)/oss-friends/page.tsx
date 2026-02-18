@@ -102,7 +102,15 @@ export default async function OSSFriendsPage() {
   );
 }
 
-export const metadata = {
+import { createMetadata, createOGImageUrl } from "@/lib/metadata";
+
+export const metadata = createMetadata({
   title: "OSS Friends | Rybbit",
   description: "Open source projects we love and support. Join our OSS Friends community.",
-};
+  openGraph: {
+    images: [createOGImageUrl("OSS Friends", "Open source projects we love and support. Join our OSS Friends community.")],
+  },
+  twitter: {
+    images: [createOGImageUrl("OSS Friends", "Open source projects we love and support. Join our OSS Friends community.")],
+  },
+});

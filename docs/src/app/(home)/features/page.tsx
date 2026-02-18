@@ -41,12 +41,19 @@ import {
   Zap,
 } from "lucide-react";
 import type { Metadata } from "next";
+import { createMetadata, createOGImageUrl } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createMetadata({
   title: "Features - Rybbit Analytics",
   description:
     "Powerful, privacy-friendly analytics features to help you understand your audience and grow your business. Real-time data, session replay, web vitals, and more.",
-};
+  openGraph: {
+    images: [createOGImageUrl("Features - Rybbit Analytics", "Powerful, privacy-friendly analytics features to help you understand your audience and grow your business.")],
+  },
+  twitter: {
+    images: [createOGImageUrl("Features - Rybbit Analytics", "Powerful, privacy-friendly analytics features to help you understand your audience and grow your business.")],
+  },
+});
 
 const coreWebAnalyticsFeatures = [
   {

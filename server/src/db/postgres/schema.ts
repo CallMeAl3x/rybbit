@@ -168,6 +168,7 @@ export const invitation = pgTable("invitation", {
     .references(() => organization.id),
   role: text().notNull(),
   status: text().notNull(),
+  createdAt: timestamp({ mode: "string" }),
   expiresAt: timestamp({ mode: "string" }).notNull(),
   // Site access restriction for the invited member
   hasRestrictedSiteAccess: boolean("has_restricted_site_access").default(false).notNull(),
@@ -332,35 +333,35 @@ export const uptimeMonitors = pgTable("uptime_monitors", {
   validationRules: jsonb("validation_rules").notNull().default([]).$type<
     Array<
       | {
-          type: "status_code";
-          operator: "equals" | "not_equals" | "in" | "not_in";
-          value: number | number[];
-        }
+        type: "status_code";
+        operator: "equals" | "not_equals" | "in" | "not_in";
+        value: number | number[];
+      }
       | {
-          type: "response_time";
-          operator: "less_than" | "greater_than";
-          value: number;
-        }
+        type: "response_time";
+        operator: "less_than" | "greater_than";
+        value: number;
+      }
       | {
-          type: "response_body_contains" | "response_body_not_contains";
-          value: string;
-          caseSensitive?: boolean;
-        }
+        type: "response_body_contains" | "response_body_not_contains";
+        value: string;
+        caseSensitive?: boolean;
+      }
       | {
-          type: "header_exists";
-          header: string;
-        }
+        type: "header_exists";
+        header: string;
+      }
       | {
-          type: "header_value";
-          header: string;
-          operator: "equals" | "contains";
-          value: string;
-        }
+        type: "header_value";
+        header: string;
+        operator: "equals" | "contains";
+        value: string;
+      }
       | {
-          type: "response_size";
-          operator: "less_than" | "greater_than";
-          value: number;
-        }
+        type: "response_size";
+        operator: "less_than" | "greater_than";
+        value: number;
+      }
     >
   >(),
 

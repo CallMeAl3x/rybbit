@@ -2,6 +2,7 @@ import { ComparisonPage } from "../components/ComparisonPage";
 import { fathomComparisonData } from "./comparison-data";
 import { FathomComparisonContent } from "./ComparisonContent";
 import type { Metadata } from "next";
+import { createOGImageUrl } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   title: "Rybbit vs Fathom: Privacy Analytics Comparison 2025",
@@ -12,11 +13,13 @@ export const metadata: Metadata = {
     description: "Fathom is simple. Rybbit is simple AND powerful. Compare session replay, funnels, and more.",
     type: "website",
     url: "https://rybbit.com/compare/fathom",
+    images: [createOGImageUrl("Rybbit vs Fathom: More Features, Same Privacy Focus", "Fathom is simple. Rybbit is simple AND powerful. Compare session replay, funnels, and more.")],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rybbit vs Fathom Analytics",
     description: "Privacy-first analytics compared. See which offers more value.",
+    images: [createOGImageUrl("Rybbit vs Fathom Analytics", "Privacy-first analytics compared. See which offers more value.")],
   },
   alternates: {
     canonical: "https://rybbit.com/compare/fathom",

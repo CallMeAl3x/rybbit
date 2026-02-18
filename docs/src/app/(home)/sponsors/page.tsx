@@ -5,6 +5,7 @@ import Image from "next/image";
 import { TrackedButton } from "../../../components/TrackedButton";
 import { cn } from "../../../lib/utils";
 import type { Metadata } from "next";
+import { createOGImageUrl } from "@/lib/metadata";
 
 const tilt_wrap = Tilt_Warp({
   subsets: ["latin"],
@@ -19,6 +20,13 @@ export const metadata: Metadata = {
     description: "Meet the sponsors who support Rybbit, the open-source privacy-first analytics platform.",
     type: "website",
     url: "https://rybbit.com/sponsors",
+    images: [createOGImageUrl("Rybbit Sponsors", "Meet the sponsors who support Rybbit, the open-source privacy-first analytics platform.")],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rybbit Sponsors",
+    description: "Meet the sponsors who support Rybbit, the open-source privacy-first analytics platform.",
+    images: [createOGImageUrl("Rybbit Sponsors", "Meet the sponsors who support Rybbit, the open-source privacy-first analytics platform.")],
   },
   alternates: {
     canonical: "https://rybbit.com/sponsors",

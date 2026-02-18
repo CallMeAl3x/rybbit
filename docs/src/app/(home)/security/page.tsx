@@ -1,7 +1,15 @@
-export const metadata = {
+import { createMetadata, createOGImageUrl } from "@/lib/metadata";
+
+export const metadata = createMetadata({
   title: "Security",
   description: "Rybbit security practices and data protection",
-};
+  openGraph: {
+    images: [createOGImageUrl("Security", "Rybbit security practices and data protection")],
+  },
+  twitter: {
+    images: [createOGImageUrl("Security", "Rybbit security practices and data protection")],
+  },
+});
 
 export default function Security() {
   return (

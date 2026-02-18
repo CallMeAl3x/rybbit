@@ -2,6 +2,7 @@ import { ComparisonPage } from "../components/ComparisonPage";
 import { posthogComparisonData } from "./comparison-data";
 import { PostHogComparisonContent } from "./ComparisonContent";
 import type { Metadata } from "next";
+import { createOGImageUrl } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   title: "Rybbit vs PostHog: Analytics Platform Comparison 2025",
@@ -12,11 +13,13 @@ export const metadata: Metadata = {
     description: "PostHog does everything. Rybbit does web analytics perfectly. Compare the approaches.",
     type: "website",
     url: "https://rybbit.com/compare/posthog",
+    images: [createOGImageUrl("Rybbit vs PostHog: Focused Analytics vs Feature Bloat", "PostHog does everything. Rybbit does web analytics perfectly. Compare the approaches.")],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rybbit vs PostHog Comparison",
     description: "Focused web analytics vs all-in-one platform. Which approach fits your needs?",
+    images: [createOGImageUrl("Rybbit vs PostHog Comparison", "Focused web analytics vs all-in-one platform. Which approach fits your needs?")],
   },
   alternates: {
     canonical: "https://rybbit.com/compare/posthog",

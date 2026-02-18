@@ -2,6 +2,7 @@ import { ComparisonPage } from "../components/ComparisonPage";
 import { plausibleComparisonData } from "./comparison-data";
 import { PlausibleComparisonContent } from "./ComparisonContent";
 import type { Metadata } from "next";
+import { createOGImageUrl } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   title: "Rybbit vs Plausible: Feature Comparison 2025",
@@ -12,11 +13,13 @@ export const metadata: Metadata = {
     description: "Both respect privacy, but Rybbit offers more power. Compare session replay, funnels, and pricing.",
     type: "website",
     url: "https://rybbit.com/compare/plausible",
+    images: [createOGImageUrl("Rybbit vs Plausible: Which Privacy-First Analytics Wins?", "Both respect privacy, but Rybbit offers more power. Compare session replay, funnels, and pricing.")],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rybbit vs Plausible Comparison",
     description: "Privacy-first analytics showdown. See which platform offers more value.",
+    images: [createOGImageUrl("Rybbit vs Plausible Comparison", "Privacy-first analytics showdown. See which platform offers more value.")],
   },
   alternates: {
     canonical: "https://rybbit.com/compare/plausible",

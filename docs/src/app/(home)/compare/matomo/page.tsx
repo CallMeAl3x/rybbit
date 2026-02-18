@@ -2,6 +2,7 @@ import { ComparisonPage } from "../components/ComparisonPage";
 import { matomoComparisonData } from "./comparison-data";
 import { MatomoComparisonContent } from "./ComparisonContent";
 import type { Metadata } from "next";
+import { createOGImageUrl } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   title: "Rybbit vs Matomo: Open-Source Analytics Comparison 2025",
@@ -12,11 +13,13 @@ export const metadata: Metadata = {
     description: "Side-by-side comparison of Rybbit and Matomo. Modern, privacy-first analytics vs legacy PHP system.",
     type: "website",
     url: "https://rybbit.com/compare/matomo",
+    images: [createOGImageUrl("Rybbit vs Matomo: Which Analytics Platform is Right for You?", "Side-by-side comparison of Rybbit and Matomo. Modern, privacy-first analytics vs legacy PHP system.")],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rybbit vs Matomo Comparison",
     description: "Compare Rybbit and Matomo analytics. See which open-source platform fits your needs.",
+    images: [createOGImageUrl("Rybbit vs Matomo Comparison", "Compare Rybbit and Matomo analytics. See which open-source platform fits your needs.")],
   },
   alternates: {
     canonical: "https://rybbit.com/compare/matomo",

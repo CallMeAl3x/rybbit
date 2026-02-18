@@ -1,10 +1,17 @@
 import Link from "next/link";
 import { Mail, Github, Bell, Twitter } from "lucide-react";
+import { createMetadata, createOGImageUrl } from "@/lib/metadata";
 
-export const metadata = {
+export const metadata = createMetadata({
   title: "Contact",
   description: "Get in touch with the Rybbit team",
-};
+  openGraph: {
+    images: [createOGImageUrl("Contact", "Get in touch with the Rybbit team")],
+  },
+  twitter: {
+    images: [createOGImageUrl("Contact", "Get in touch with the Rybbit team")],
+  },
+});
 
 export default function Contact() {
   return (
