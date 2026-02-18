@@ -3,11 +3,13 @@ import type { ReactElement } from 'react';
 interface GenerateOGImageProps {
   title: string;
   description?: string;
+  logoSrc: string;
 }
 
 export function generateOGImage({
   title,
   description,
+  logoSrc,
 }: GenerateOGImageProps): ReactElement {
   return (
     <div
@@ -58,38 +60,20 @@ export function generateOGImage({
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
+          gap: '24px',
         }}
       >
-        {/* Frog icon inline SVG */}
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="rgb(74, 222, 128)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 2a4 4 0 0 0-4 4v2H4a2 2 0 0 0-2 2v2a8 8 0 0 0 16 0v-2a2 2 0 0 0-2-2h-4V6a4 4 0 0 0-4-4z" />
-          <circle cx="9" cy="13" r="1" fill="rgb(74, 222, 128)" />
-          <circle cx="15" cy="13" r="1" fill="rgb(74, 222, 128)" />
-        </svg>
-        <div
-          style={{
-            fontSize: 36,
-            fontWeight: 700,
-            color: 'white',
-          }}
-        >
-          Rybbit
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={logoSrc}
+          height="40"
+          style={{ height: '40px' }}
+          alt=""
+        />
         <div
           style={{
             fontSize: 28,
             color: 'rgb(115, 115, 115)',
-            marginLeft: '8px',
           }}
         >
           Docs

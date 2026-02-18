@@ -1,7 +1,13 @@
 import { ImageResponse } from 'next/og';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { source } from '@/lib/source';
 import { notFound } from 'next/navigation';
 import { generateOGImage } from './generate';
+
+const logoBase64 = readFile(
+  join(process.cwd(), 'public/rybbit/horizontal_white.png'),
+).then((buf) => `data:image/png;base64,${buf.toString('base64')}`);
 
 async function loadInterFont(
   weight: 400 | 700,
@@ -32,15 +38,17 @@ export async function GET(
   const page = source.getPage(pageSlug.length > 0 ? pageSlug : undefined);
   if (!page) notFound();
 
-  const [interRegular, interBoldFont] = await Promise.all([
+  const [interRegular, interBoldFont, logoSrc] = await Promise.all([
     loadInterFont(400),
     loadInterFont(700),
+    logoBase64,
   ]);
 
   return new ImageResponse(
     generateOGImage({
       title: page.data.title,
       description: page.data.description,
+      logoSrc,
     }),
     {
       width: 1200,
