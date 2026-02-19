@@ -108,6 +108,7 @@ import {
   unsubscribeMarketing,
   updateAccountSettings,
 } from "./api/user/index.js";
+import { exportAllData, importAllData } from "./api/migrate/index.js";
 import { initializeClickhouse } from "./db/clickhouse/clickhouse.js";
 import { initPostgres } from "./db/postgres/initPostgres.js";
 import {
@@ -345,6 +346,12 @@ async function gscRoutes(fastify: FastifyInstance) {
   fastify.get("/sites/:siteId/gsc/data", publicSite, getGSCData);
 }
 
+async function migrateRoutes(fastify: FastifyInstance) {
+  // DATA MIGRATION - Admin only for security
+  fastify.get("/migrate/export", adminOnly, exportAllData);
+  fastify.post("/migrate/import", adminOnly, importAllData);
+}
+
 async function stripeAdminRoutes(fastify: FastifyInstance) {
   // STRIPE & ADMIN
   if (IS_CLOUD) {
@@ -379,6 +386,7 @@ async function apiRoutes(fastify: FastifyInstance) {
   await fastify.register(userRoutes);
   await fastify.register(gscRoutes);
   await fastify.register(stripeAdminRoutes);
+  await fastify.register(migrateRoutes);
 
   // Health check
   fastify.get("/health", { logLevel: "silent" }, (_: FastifyRequest, reply: FastifyReply) => reply.send("OK"));
