@@ -57,10 +57,7 @@ export async function exportAllData(request: FastifyRequest, reply: FastifyReply
       format: "JSONEachRow",
     });
 
-    const events: any[] = [];
-    for await (const row of eventsResultSet.jsonObjects()) {
-      events.push(row);
-    }
+    const events = await eventsResultSet.json();
     exportData.data.clickhouse.events = events;
 
     // Export monitor_events
@@ -70,10 +67,7 @@ export async function exportAllData(request: FastifyRequest, reply: FastifyReply
         format: "JSONEachRow",
       });
 
-      const monitorEvents: any[] = [];
-      for await (const row of monitorResultSet.jsonObjects()) {
-        monitorEvents.push(row);
-      }
+      const monitorEvents = await monitorResultSet.json();
       exportData.data.clickhouse.monitor_events = monitorEvents;
     } catch (e) {
       // Table might not exist
@@ -87,10 +81,7 @@ export async function exportAllData(request: FastifyRequest, reply: FastifyReply
         format: "JSONEachRow",
       });
 
-      const replayEvents: any[] = [];
-      for await (const row of replayResultSet.jsonObjects()) {
-        replayEvents.push(row);
-      }
+      const replayEvents = await replayResultSet.json();
       exportData.data.clickhouse.session_replay_events = replayEvents;
     } catch (e) {
       console.log("No session replay events to export");
@@ -103,10 +94,7 @@ export async function exportAllData(request: FastifyRequest, reply: FastifyReply
         format: "JSONEachRow",
       });
 
-      const replayMetadata: any[] = [];
-      for await (const row of replayMetaResultSet.jsonObjects()) {
-        replayMetadata.push(row);
-      }
+      const replayMetadata = await replayMetaResultSet.json();
       exportData.data.clickhouse.session_replay_metadata = replayMetadata;
     } catch (e) {
       console.log("No session replay metadata to export");
