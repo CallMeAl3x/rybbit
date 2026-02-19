@@ -5,6 +5,7 @@ import { db } from "../../db/postgres/postgres.js";
 import { migrateExportSchema } from "./schema.js";
 
 // Export all data from Railway instance for migration
+// Updated: Fix build error with ClickHouse client API
 export async function exportAllData(request: FastifyRequest, reply: FastifyReply) {
   try {
     const parsed = migrateExportSchema.safeParse({
