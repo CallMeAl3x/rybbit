@@ -22,7 +22,6 @@ import { Suspense } from "react";
 import { useGetSite } from "../../../../api/admin/hooks/useSites";
 import { Sidebar as SidebarComponents } from "../../../../components/sidebar/Sidebar";
 import { SiteSettings } from "../../../../components/SiteSettings/SiteSettings";
-import { IS_CLOUD } from "../../../../lib/const";
 import { useEmbedablePage } from "../../utils";
 import { SiteSelector } from "./SiteSelector";
 import { useStripeSubscription } from "../../../../lib/subscription/useStripeSubscription";
@@ -83,22 +82,18 @@ function SidebarContent() {
           href={getTabPath("globe")}
           icon={<Globe2 className="w-4 h-4" />}
         />
-        {IS_CLOUD && (
-          <SidebarComponents.Item
-            label={t("Pages")}
-            active={isActiveTab("pages")}
-            href={getTabPath("pages")}
-            icon={<File className="w-4 h-4" />}
-          />
-        )}
-        {IS_CLOUD && (
-          <SidebarComponents.Item
-            label={t("Performance")}
-            active={isActiveTab("performance")}
-            href={getTabPath("performance")}
-            icon={<Gauge className="w-4 h-4" />}
-          />
-        )}
+        <SidebarComponents.Item
+          label={t("Pages")}
+          active={isActiveTab("pages")}
+          href={getTabPath("pages")}
+          icon={<File className="w-4 h-4" />}
+        />
+        <SidebarComponents.Item
+          label={t("Performance")}
+          active={isActiveTab("performance")}
+          href={getTabPath("performance")}
+          icon={<Gauge className="w-4 h-4" />}
+        />
         <SidebarComponents.Item
           label={t("Goals")}
           active={isActiveTab("goals")}
