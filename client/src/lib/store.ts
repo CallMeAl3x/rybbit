@@ -101,6 +101,38 @@ const recalculateTimeForTimezone = (time: Time, timezone: string): Time | null =
 
 export type StatType = "pageviews" | "sessions" | "users" | "pages_per_session" | "bounce_rate" | "session_duration";
 
+type RangeWithTimes = Extract<Time, { mode: "range" }> & { startTime: string; endTime: string };
+
+const hasRangeTimes = (time: Time): time is RangeWithTimes =>
+  time.mode === "range" && typeof time.startTime === "string" && typeof time.endTime === "string";
+
+const getRangeDateTimeBounds = (time: RangeWithTimes) => {
+  const zone = getTimezone();
+  return {
+    start: DateTime.fromISO(`${time.startDate}T${time.startTime}`, { zone }),
+    end: DateTime.fromISO(`${time.endDate}T${time.endTime}`, { zone }),
+  };
+};
+
+const toRangeWithTimes = (start: DateTime, end: DateTime): RangeWithTimes => ({
+  mode: "range",
+  startDate: start.toISODate() ?? "",
+  startTime: start.toFormat("HH:mm:ss"),
+  endDate: end.toISODate() ?? "",
+  endTime: end.toFormat("HH:mm:ss"),
+});
+
+const getBucketForDateTimeRange = (start: DateTime, end: DateTime): TimeBucket => {
+  const minutes = end.diff(start, "minutes").minutes;
+
+  if (minutes <= 120) return "minute";
+  if (minutes <= 1440) return "five_minutes";
+  if (minutes <= 14 * 1440) return "hour";
+  if (minutes <= 60 * 1440) return "day";
+  if (minutes <= 180 * 1440) return "week";
+  return "month";
+};
+
 type Store = {
   site: string;
   setSite: (site: string) => void;
@@ -191,22 +223,30 @@ export const useStore = create<Store>()(
             pastMinutesEnd: time.pastMinutesEnd + timeDiff,
           };
         } else if (time.mode === "range") {
-          const timeRangeLength =
-            DateTime.fromISO(time.endDate).diff(DateTime.fromISO(time.startDate), "days").days + 1;
+          if (hasRangeTimes(time)) {
+            const { start, end } = getRangeDateTimeBounds(time);
+            const duration = end.diff(start);
+            bucketToUse = getBucketForDateTimeRange(start, end);
 
-          if (timeRangeLength > 180) {
-            bucketToUse = "month";
-          } else if (timeRangeLength > 31) {
-            bucketToUse = "week";
+            previousTime = toRangeWithTimes(start.minus(duration), end.minus(duration));
           } else {
-            bucketToUse = "day";
-          }
+            const timeRangeLength =
+              DateTime.fromISO(time.endDate).diff(DateTime.fromISO(time.startDate), "days").days + 1;
 
-          previousTime = {
-            mode: "range",
-            startDate: DateTime.fromISO(time.startDate).minus({ days: timeRangeLength }).toISODate() ?? "",
-            endDate: DateTime.fromISO(time.startDate).minus({ days: 1 }).toISODate() ?? "",
-          };
+            if (timeRangeLength > 180) {
+              bucketToUse = "month";
+            } else if (timeRangeLength > 31) {
+              bucketToUse = "week";
+            } else {
+              bucketToUse = "day";
+            }
+
+            previousTime = {
+              mode: "range",
+              startDate: DateTime.fromISO(time.startDate).minus({ days: timeRangeLength }).toISODate() ?? "",
+              endDate: DateTime.fromISO(time.startDate).minus({ days: 1 }).toISODate() ?? "",
+            };
+          }
         } else if (time.mode === "week") {
           bucketToUse = "day";
           previousTime = {
@@ -301,10 +341,30 @@ export const goBack = () => {
       false
     );
   } else if (time.mode === "range") {
+    if (hasRangeTimes(time)) {
+      const { start, end } = getRangeDateTimeBounds(time);
+      const duration = end.diff(start);
+
+      setTime(toRangeWithTimes(start.minus(duration), end.minus(duration)), false);
+      return;
+    }
+
     const startDate = DateTime.fromISO(time.startDate);
     const endDate = DateTime.fromISO(time.endDate);
 
     const daysBetweenStartAndEnd = endDate.diff(startDate, "days").days;
+    if (daysBetweenStartAndEnd === 0) {
+      const previousDate = startDate.minus({ days: 1 }).toISODate() ?? "";
+      setTime(
+        {
+          mode: "range",
+          startDate: previousDate,
+          endDate: previousDate,
+        },
+        false
+      );
+      return;
+    }
 
     setTime(
       {
@@ -350,11 +410,44 @@ export const goForward = () => {
       day: DateTime.fromISO(time.day).plus({ days: 1 }).toISODate() ?? "",
     });
   } else if (time.mode === "range") {
+    if (hasRangeTimes(time)) {
+      const { start, end } = getRangeDateTimeBounds(time);
+      const duration = end.diff(start);
+      const proposedStart = start.plus(duration);
+      const proposedEnd = end.plus(duration);
+      const now = DateTime.now().setZone(getTimezone());
+
+      if (proposedStart > now) {
+        return;
+      }
+
+      setTime(toRangeWithTimes(proposedStart, proposedEnd > now ? now : proposedEnd), false);
+      return;
+    }
+
     const startDate = DateTime.fromISO(time.startDate);
     const endDate = DateTime.fromISO(time.endDate);
     const now = DateTime.now();
 
     const daysBetweenStartAndEnd = endDate.diff(startDate, "days").days;
+    if (daysBetweenStartAndEnd === 0) {
+      const proposedDate = startDate.plus({ days: 1 });
+      if (proposedDate > now) {
+        return;
+      }
+
+      const nextDate = proposedDate.toISODate() ?? "";
+      setTime(
+        {
+          mode: "range",
+          startDate: nextDate,
+          endDate: nextDate,
+        },
+        false
+      );
+      return;
+    }
+
     const proposedEndDate = endDate.plus({ days: daysBetweenStartAndEnd });
 
     // Don't allow moving forward if it would put the entire range in the future
@@ -433,6 +526,10 @@ export const canGoForward = (time: Time) => {
   }
 
   if (time.mode === "range") {
+    if (hasRangeTimes(time)) {
+      return !(getRangeDateTimeBounds(time).end >= DateTime.now().setZone(getTimezone()));
+    }
+
     return !(DateTime.fromISO(time.endDate).startOf("day") >= currentDay);
   }
 

@@ -132,9 +132,14 @@ export const useSyncStateWithUrl = () => {
   const initializedFromUrlRef = React.useRef(false);
 
   // Check if we're on a path where we should sync URL params
-  const shouldSyncUrl = () => {
-    if (!pathname) return false;
-    const pathParts = pathname.split("/");
+  // Use a ref so this check doesn't trigger effects on navigation
+  const pathnameRef = React.useRef(pathname);
+  pathnameRef.current = pathname;
+
+  const shouldSyncUrl = React.useCallback(() => {
+    const p = pathnameRef.current;
+    if (!p) return false;
+    const pathParts = p.split("/");
     if (pathParts.length < 3) return false;
     return [
       "main",
@@ -149,7 +154,7 @@ export const useSyncStateWithUrl = () => {
       "errors",
       "pages",
     ].includes(pathParts[2]);
-  };
+  }, []);
 
   // Get URL params using nuqs
   const [urlParams, setUrlParams] = useQueryStates(analyticsParsers, {
@@ -174,7 +179,16 @@ export const useSyncStateWithUrl = () => {
       if (urlParams.timeMode === "day" && urlParams.day) {
         timeFromUrl = { mode: "day", day: urlParams.day };
       } else if (urlParams.timeMode === "range" && urlParams.startDate && urlParams.endDate) {
-        timeFromUrl = { mode: "range", startDate: urlParams.startDate, endDate: urlParams.endDate };
+        timeFromUrl =
+          urlParams.startTime && urlParams.endTime
+            ? {
+                mode: "range",
+                startDate: urlParams.startDate,
+                endDate: urlParams.endDate,
+                startTime: urlParams.startTime,
+                endTime: urlParams.endTime,
+              }
+            : { mode: "range", startDate: urlParams.startDate, endDate: urlParams.endDate };
       } else if (urlParams.timeMode === "week" && urlParams.week) {
         timeFromUrl = { mode: "week", week: urlParams.week };
       } else if (urlParams.timeMode === "month" && urlParams.month) {
@@ -219,7 +233,8 @@ export const useSyncStateWithUrl = () => {
 
     // Mark that we've initialized from URL
     initializedFromUrlRef.current = true;
-  }, [urlParams, site, setTime, setBucket, setSelectedStat, setFilters, shouldSyncUrl, pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally omit pathname; initializedFromUrlRef guards re-runs
+  }, [urlParams, site, setTime, setBucket, setSelectedStat, setFilters, shouldSyncUrl]);
 
   // Update URL when state changes
   useEffect(() => {
@@ -240,6 +255,10 @@ export const useSyncStateWithUrl = () => {
       newParams.day = null;
       newParams.startDate = null;
       newParams.endDate = null;
+      newParams.startTime = null;
+      newParams.endTime = null;
+      newParams.startDateTime = null;
+      newParams.endDateTime = null;
       newParams.week = null;
       newParams.month = null;
       newParams.year = null;
@@ -247,12 +266,26 @@ export const useSyncStateWithUrl = () => {
       newParams.past_minutes_end = null;
     } else {
       newParams.wellKnown = null;
+      newParams.day = null;
+      newParams.startDate = null;
+      newParams.endDate = null;
+      newParams.startTime = null;
+      newParams.endTime = null;
+      newParams.startDateTime = null;
+      newParams.endDateTime = null;
+      newParams.week = null;
+      newParams.month = null;
+      newParams.year = null;
+      newParams.past_minutes_start = null;
+      newParams.past_minutes_end = null;
       // Store explicit date fields based on mode
       if (time.mode === "day" && "day" in time) {
         newParams.day = time.day;
       } else if (time.mode === "range" && "startDate" in time && "endDate" in time) {
         newParams.startDate = time.startDate;
         newParams.endDate = time.endDate;
+        newParams.startTime = time.startTime ?? null;
+        newParams.endTime = time.endTime ?? null;
       } else if (time.mode === "week" && "week" in time) {
         newParams.week = time.week;
       } else if (time.mode === "month" && "month" in time) {
@@ -267,5 +300,6 @@ export const useSyncStateWithUrl = () => {
 
     // Note: embed param is automatically preserved by nuqs
     setUrlParams(newParams);
-  }, [time, bucket, selectedStat, filters, site, setUrlParams, shouldSyncUrl, pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally omit pathname to avoid interfering with soft navigation
+  }, [time, bucket, selectedStat, filters, site, setUrlParams, shouldSyncUrl]);
 };

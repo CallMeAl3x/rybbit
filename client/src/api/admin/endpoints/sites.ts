@@ -10,6 +10,7 @@ export type SiteResponse = {
   createdBy: string;
   organizationId: string | null;
   public: boolean;
+  embedEnabled?: boolean;
   saltUserIds: boolean;
   blockBots: boolean;
   isOwner: boolean;
@@ -55,6 +56,7 @@ export type GetSitesFromOrgResponse = {
     sessionsLast24Hours: number;
     isOwner: boolean;
     tags?: string[] | null;
+    teams?: { id: string; name: string }[];
   }>;
   subscription: {
     monthlyEventCount: number;
@@ -104,8 +106,10 @@ export function deleteSite(siteId: number) {
 export function updateSiteConfig(
   siteId: number,
   config: {
+    name?: string;
     domain?: string;
     public?: boolean;
+    embedEnabled?: boolean;
     saltUserIds?: boolean;
     blockBots?: boolean;
     excludedIPs?: string[];

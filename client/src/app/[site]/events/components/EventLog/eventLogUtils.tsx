@@ -1,7 +1,7 @@
 "use client";
 
 import { Event } from "../../../../../api/analytics/endpoints";
-import { EVENT_TYPE_CONFIG, getEventDisplayName } from "../../../../../lib/events";
+import { EVENT_TYPE_CONFIG, EventDisplayNameFormatter, TranslationFunction } from "../../../../../lib/events";
 
 export function getEventKey(event: Event) {
   return `${event.timestamp}-${event.session_id}-${event.user_id}-${event.type}-${event.event_name ?? ""}-${event.pathname}`;
@@ -18,15 +18,21 @@ export function parseEventProperties(event: Event): Record<string, any> {
   return {};
 }
 
-export function getEventTypeLabel(type: string) {
-  return EVENT_TYPE_CONFIG.find(item => item.value === type)?.label ?? "Event";
+export function getEventTypeLabel(type: string, t?: TranslationFunction) {
+  const label = EVENT_TYPE_CONFIG.find(item => item.value === type)?.label ?? "Event";
+  return t ? t(label) : label;
 }
 
 export function buildEventPath(event: Event) {
   return `${event.pathname}${event.querystring ? `${event.querystring}` : ""}`;
 }
 
-export function getMainData(event: Event, props: Record<string, any>) {
+export function getMainData(
+  event: Event,
+  props: Record<string, any>,
+  getEventDisplayName: EventDisplayNameFormatter,
+  t?: TranslationFunction
+) {
   const isPageview = event.type === "pageview";
   const isOutbound = event.type === "outbound";
   const isButtonClick = event.type === "button_click";
@@ -55,6 +61,6 @@ export function getMainData(event: Event, props: Record<string, any>) {
   }
 
   return {
-    label: event.event_name || "Event",
+    label: event.event_name || (t ? t("Event") : "Event"),
   };
 }
